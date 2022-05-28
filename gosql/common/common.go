@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/url"
-	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -35,7 +34,7 @@ var rLogSpacesAll = regexp.MustCompile(`[\s\t]+`)
 var rLogSpacesEnd = regexp.MustCompile(`[\s\t]+;$`)
 var rSqlParam = regexp.MustCompile(`\$\d+`)
 
-func log(m string, s time.Time, e error, tx bool, query string, args ...any) string {
+func log(w io.Writer, m string, s time.Time, e error, tx bool, query string, args ...any) string {
 	var tmsg string
 
 	if tx {
@@ -68,7 +67,7 @@ func log(m string, s time.Time, e error, tx bool, query string, args ...any) str
 	}
 
 	res := fmt.Sprintln("\033[" + color + "m[SQL]" + tmsg + qmsg + astr + estr + fmt.Sprintf(" %.3f ms", time.Since(s).Seconds()) + "\033[0m")
-	fmt.Fprintln(os.Stdout, res)
+	fmt.Fprintln(w, res)
 	return res
 }
 

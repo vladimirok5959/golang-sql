@@ -2,6 +2,7 @@ package common_test
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/url"
 	"path/filepath"
@@ -17,34 +18,34 @@ var _ = Describe("common", func() {
 	Context("log", func() {
 		Context("time", func() {
 			It("calculate one second", func() {
-				str := common.Log("[func Exec]", time.Now().Add(time.Second*-1), nil, false, "")
+				str := common.Log(io.Discard, "[func Exec]", time.Now().Add(time.Second*-1), nil, false, "")
 				Expect(str).To(Equal("\x1b[0;33m[SQL] [func Exec] (empty) (nil) 1.000 ms\x1b[0m\n"))
 			})
 		})
 
 		Context("format", func() {
 			It("with func name", func() {
-				str := common.Log("[func Exec]", time.Now(), nil, false, "")
+				str := common.Log(io.Discard, "[func Exec]", time.Now(), nil, false, "")
 				Expect(str).To(Equal("\x1b[0;33m[SQL] [func Exec] (empty) (nil) 0.000 ms\x1b[0m\n"))
 			})
 
 			It("with sql query", func() {
-				str := common.Log("[func Exec]", time.Now(), nil, false, "select * from users")
+				str := common.Log(io.Discard, "[func Exec]", time.Now(), nil, false, "select * from users")
 				Expect(str).To(Equal("\x1b[0;33m[SQL] [func Exec] select * from users (empty) (nil) 0.000 ms\x1b[0m\n"))
 			})
 
 			It("with error message", func() {
-				str := common.Log("[func Exec]", time.Now(), fmt.Errorf("Exec error"), false, "select * from users")
+				str := common.Log(io.Discard, "[func Exec]", time.Now(), fmt.Errorf("Exec error"), false, "select * from users")
 				Expect(str).To(Equal("\x1b[0;33m[SQL] [func Exec] select * from users (empty) \x1b[0m\x1b[0;31m(Exec error) 0.000 ms\x1b[0m\n"))
 			})
 
 			It("with transaction flag", func() {
-				str := common.Log("[func Exec]", time.Now(), fmt.Errorf("Exec error"), true, "select * from users")
+				str := common.Log(io.Discard, "[func Exec]", time.Now(), fmt.Errorf("Exec error"), true, "select * from users")
 				Expect(str).To(Equal("\x1b[1;33m[SQL] [TX] [func Exec] select * from users (empty) \x1b[0m\x1b[0;31m(Exec error) 0.000 ms\x1b[0m\n"))
 			})
 
 			It("with sql query arguments", func() {
-				str := common.Log("[func Exec]", time.Now(), fmt.Errorf("Exec error"), true, "select * from users where id=$1", 100)
+				str := common.Log(io.Discard, "[func Exec]", time.Now(), fmt.Errorf("Exec error"), true, "select * from users where id=$1", 100)
 				Expect(str).To(Equal("\x1b[1;33m[SQL] [TX] [func Exec] select * from users where id=$1 ([100]) \x1b[0m\x1b[0;31m(Exec error) 0.000 ms\x1b[0m\n"))
 			})
 		})
