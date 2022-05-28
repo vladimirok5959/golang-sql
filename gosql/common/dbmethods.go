@@ -21,6 +21,10 @@ func (db *DBMethods) fixQuery(query string) string {
 	return query
 }
 
+func (db *DBMethods) Begin(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error) {
+	return db.DB.BeginTx(ctx, opts)
+}
+
 func (db *DBMethods) Close() error {
 	return db.DB.Close()
 }

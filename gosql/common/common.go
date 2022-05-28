@@ -15,6 +15,7 @@ import (
 )
 
 type Engine interface {
+	Begin(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
 	Close() error
 	Exec(ctx context.Context, query string, args ...any) (sql.Result, error)
 	Ping(context.Context) error
