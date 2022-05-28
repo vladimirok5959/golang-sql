@@ -17,8 +17,6 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-type queryFunc func(ctx context.Context, tx *Tx) error
-
 type Engine interface {
 	Begin(ctx context.Context, opts *sql.TxOptions) (*Tx, error)
 	Close() error
@@ -27,7 +25,7 @@ type Engine interface {
 	Prepare(ctx context.Context, query string) (*sql.Stmt, error)
 	Query(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 	QueryRow(ctx context.Context, query string, args ...any) *sql.Row
-	Transaction(ctx context.Context, queries queryFunc) error
+	Transaction(ctx context.Context, queries func(ctx context.Context, tx *Tx) error) error
 }
 
 var rLogSpacesAll = regexp.MustCompile(`[\s\t]+`)

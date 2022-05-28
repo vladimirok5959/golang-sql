@@ -99,7 +99,7 @@ func (db *DBMethods) QueryRow(ctx context.Context, query string, args ...any) *s
 	return db.DB.QueryRowContext(ctx, db.fixQuery(query), args...)
 }
 
-func (db *DBMethods) Transaction(ctx context.Context, queries queryFunc) error {
+func (db *DBMethods) Transaction(ctx context.Context, queries func(ctx context.Context, tx *Tx) error) error {
 	if queries == nil {
 		return fmt.Errorf("queries is not set for transaction")
 	}
