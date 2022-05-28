@@ -33,5 +33,13 @@ sqlite3:///data/database.sqlite
 
 ## Examples
 
-```go
+```sh
+$ go run main.go
+
+[SQL] [func Exec] INSERT INTO users (id, name) VALUES ($1, $2) ([5 John]) (nil) 0.004 ms
+[SQL] [func Query] SELECT id, name FROM users ORDER BY id DESC (empty) (nil) 0.000 ms
+ID: 5, Name: John
+ID: 2, Name: Bob
+ID: 1, Name: Alice
+[SQL] [func Close] (empty) (nil) 0.000 ms
 ```
