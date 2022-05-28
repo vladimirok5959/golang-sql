@@ -12,7 +12,7 @@ type mysql struct {
 	*common.DBMethods
 }
 
-func NewMySQL(dbURL *url.URL, migrationsDir string) (common.Engine, error) {
+func NewMySQL(dbURL *url.URL, migrationsDir string, debug bool) (common.Engine, error) {
 	db, err := common.OpenDB(dbURL, migrationsDir)
 	if err != nil {
 		return nil, err
@@ -20,7 +20,9 @@ func NewMySQL(dbURL *url.URL, migrationsDir string) (common.Engine, error) {
 
 	return &mysql{
 		DBMethods: &common.DBMethods{
-			DB: db, Driver: dbURL.Scheme,
+			DB:     db,
+			Debug:  debug,
+			Driver: dbURL.Scheme,
 		},
 	}, nil
 }
@@ -31,7 +33,7 @@ type postgresql struct {
 	*common.DBMethods
 }
 
-func NewPostgreSQL(dbURL *url.URL, migrationsDir string) (common.Engine, error) {
+func NewPostgreSQL(dbURL *url.URL, migrationsDir string, debug bool) (common.Engine, error) {
 	db, err := common.OpenDB(dbURL, migrationsDir)
 	if err != nil {
 		return nil, err
@@ -39,7 +41,9 @@ func NewPostgreSQL(dbURL *url.URL, migrationsDir string) (common.Engine, error) 
 
 	return &postgresql{
 		DBMethods: &common.DBMethods{
-			DB: db, Driver: dbURL.Scheme,
+			DB:     db,
+			Debug:  debug,
+			Driver: dbURL.Scheme,
 		},
 	}, nil
 }
@@ -50,7 +54,7 @@ type sqlite struct {
 	*common.DBMethods
 }
 
-func NewSQLite(dbURL *url.URL, migrationsDir string) (common.Engine, error) {
+func NewSQLite(dbURL *url.URL, migrationsDir string, debug bool) (common.Engine, error) {
 	db, err := common.OpenDB(dbURL, migrationsDir)
 	if err != nil {
 		return nil, err
@@ -58,7 +62,9 @@ func NewSQLite(dbURL *url.URL, migrationsDir string) (common.Engine, error) {
 
 	return &sqlite{
 		DBMethods: &common.DBMethods{
-			DB: db, Driver: dbURL.Scheme,
+			DB:     db,
+			Debug:  debug,
+			Driver: dbURL.Scheme,
 		},
 	}, nil
 }

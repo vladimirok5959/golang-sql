@@ -12,6 +12,7 @@ import (
 type DBMethods struct {
 	DB *sql.DB
 
+	Debug  bool
 	Driver string
 }
 

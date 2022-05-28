@@ -7,7 +7,7 @@ import (
 	"github.com/vladimirok5959/golang-sql/gosql/engine"
 )
 
-func Open(dbURL, migrationsDir string) (common.Engine, error) {
+func Open(dbURL, migrationsDir string, debug bool) (common.Engine, error) {
 	databaseURL, err := common.ParseUrl(dbURL)
 	if err != nil {
 		return nil, err
@@ -15,11 +15,11 @@ func Open(dbURL, migrationsDir string) (common.Engine, error) {
 
 	switch databaseURL.Scheme {
 	case "mysql":
-		return engine.NewMySQL(databaseURL, migrationsDir)
+		return engine.NewMySQL(databaseURL, migrationsDir, debug)
 	case "postgres", "postgresql":
-		return engine.NewPostgreSQL(databaseURL, migrationsDir)
+		return engine.NewPostgreSQL(databaseURL, migrationsDir, debug)
 	case "sqlite", "sqlite3":
-		return engine.NewSQLite(databaseURL, migrationsDir)
+		return engine.NewSQLite(databaseURL, migrationsDir, debug)
 	default:
 		return nil, fmt.Errorf("DB open error")
 	}
