@@ -35,7 +35,7 @@ var rLogSpacesAll = regexp.MustCompile(`[\s\t]+`)
 var rLogSpacesEnd = regexp.MustCompile(`[\s\t]+;$`)
 var rSqlParam = regexp.MustCompile(`\$\d+`)
 
-func log(m string, s time.Time, e error, tx bool, query string, args ...any) {
+func log(m string, s time.Time, e error, tx bool, query string, args ...any) string {
 	var tmsg string
 
 	if tx {
@@ -67,7 +67,9 @@ func log(m string, s time.Time, e error, tx bool, query string, args ...any) {
 		color = "1;33"
 	}
 
-	fmt.Fprintln(os.Stdout, "\033["+color+"m[SQL]"+tmsg+qmsg+astr+estr+fmt.Sprintf(" %.3f ms", time.Since(s).Seconds())+"\033[0m")
+	res := fmt.Sprintln("\033[" + color + "m[SQL]" + tmsg + qmsg + astr + estr + fmt.Sprintf(" %.3f ms", time.Since(s).Seconds()) + "\033[0m")
+	fmt.Fprintln(os.Stdout, res)
+	return res
 }
 
 func fixQuery(query string) string {
