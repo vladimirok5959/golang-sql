@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"os"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 type DBMethods struct {
@@ -108,7 +106,15 @@ func (db *DBMethods) Transaction(ctx context.Context, queries func(ctx context.C
 		return err
 	}
 	if err := queries(ctx, tx); err != nil {
-		return errors.Wrap(err, tx.Rollback().Error())
+		rerr := tx.Rollback()
+		if rerr != nil {
+			return fmt.Errorf(
+				"%v: %v",
+				rerr,
+				err,
+			)
+		}
+		return err
 	}
 	return tx.Commit()
 }
