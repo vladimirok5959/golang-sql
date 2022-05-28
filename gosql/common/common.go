@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/url"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -16,6 +17,8 @@ import (
 	_ "github.com/amacneil/dbmate/pkg/driver/sqlite"
 	"golang.org/x/exp/slices"
 )
+
+type queryFunc func(ctx context.Context, tx *Tx) error
 
 type Engine interface {
 	Begin(ctx context.Context, opts *sql.TxOptions) (*Tx, error)
@@ -27,6 +30,10 @@ type Engine interface {
 	QueryRow(ctx context.Context, query string, args ...any) *sql.Row
 	Transaction(ctx context.Context, queries queryFunc) error
 }
+
+var rLogSpacesAll = regexp.MustCompile(`[\s\t]+`)
+var rLogSpacesEnd = regexp.MustCompile(`[\s\t]+;$`)
+var rSqlParam = regexp.MustCompile(`\$\d+`)
 
 func log(m string, s time.Time, e error, tx bool, query string, args ...any) {
 	var tmsg string
@@ -61,6 +68,10 @@ func log(m string, s time.Time, e error, tx bool, query string, args ...any) {
 	}
 
 	fmt.Fprintln(os.Stdout, "\033["+color+"m[SQL]"+tmsg+qmsg+astr+estr+fmt.Sprintf(" %.3f ms", time.Since(s).Seconds())+"\033[0m")
+}
+
+func fixQuery(query string) string {
+	return rSqlParam.ReplaceAllString(query, "?")
 }
 
 func ParseUrl(dbURL string) (*url.URL, error) {

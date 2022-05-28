@@ -17,7 +17,7 @@ type Tx struct {
 
 func (db *Tx) fixQuery(query string) string {
 	if db.Driver == "mysql" {
-		return rSqlParam.ReplaceAllString(query, "?")
+		return fixQuery(query)
 	}
 	return query
 }

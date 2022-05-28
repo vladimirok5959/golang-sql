@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"regexp"
 	"time"
 
 	"github.com/pkg/errors"
@@ -17,15 +16,9 @@ type DBMethods struct {
 	Driver string
 }
 
-var rLogSpacesAll = regexp.MustCompile(`[\s\t]+`)
-var rLogSpacesEnd = regexp.MustCompile(`[\s\t]+;$`)
-var rSqlParam = regexp.MustCompile(`\$\d+`)
-
-type queryFunc func(ctx context.Context, tx *Tx) error
-
 func (db *DBMethods) fixQuery(query string) string {
 	if db.Driver == "mysql" {
-		return rSqlParam.ReplaceAllString(query, "?")
+		return fixQuery(query)
 	}
 	return query
 }
