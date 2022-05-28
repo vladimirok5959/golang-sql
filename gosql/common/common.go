@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"os"
+	"strings"
+	"time"
 
 	"github.com/amacneil/dbmate/pkg/dbmate"
 	_ "github.com/amacneil/dbmate/pkg/driver/mysql"
@@ -15,7 +18,7 @@ import (
 )
 
 type Engine interface {
-	Begin(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
+	Begin(ctx context.Context, opts *sql.TxOptions) (*Tx, error)
 	Close() error
 	Exec(ctx context.Context, query string, args ...any) (sql.Result, error)
 	Ping(context.Context) error
@@ -23,6 +26,41 @@ type Engine interface {
 	Query(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 	QueryRow(ctx context.Context, query string, args ...any) *sql.Row
 	Transaction(ctx context.Context, queries queryFunc) error
+}
+
+func log(m string, s time.Time, e error, tx bool, query string, args ...any) {
+	var tmsg string
+
+	if tx {
+		tmsg = " [TX]"
+	}
+	if m != "" {
+		tmsg = tmsg + " " + m
+	}
+
+	qmsg := query
+	if qmsg != "" {
+		qmsg = strings.Trim(rLogSpacesAll.ReplaceAllString(qmsg, " "), " ")
+		qmsg = rLogSpacesEnd.ReplaceAllString(qmsg, ";")
+		qmsg = " " + qmsg
+	}
+
+	astr := " (empty)"
+	if len(args) > 0 {
+		astr = fmt.Sprintf(" (%v)", args)
+	}
+
+	estr := " (nil)"
+	if e != nil {
+		estr = " \033[0m\033[0;31m(" + e.Error() + ")"
+	}
+
+	color := "0;33"
+	if tx {
+		color = "1;33"
+	}
+
+	fmt.Fprintln(os.Stdout, "\033["+color+"m[SQL]"+tmsg+qmsg+astr+estr+fmt.Sprintf(" %.3f ms", time.Since(s).Seconds())+"\033[0m")
 }
 
 func ParseUrl(dbURL string) (*url.URL, error) {
