@@ -32,7 +32,7 @@ func main() {
 	}
 
 	// DB struct here ./db/migrations/20220527233113_test_migration.sql
-	// Insert some data to users table
+	fmt.Println("Insert some data to users table")
 	if _, err := db.Exec(
 		context.Background(),
 		"INSERT INTO users (id, name) VALUES ($1, $2)",
@@ -41,7 +41,7 @@ func main() {
 		panic(fmt.Sprintf("%s", err))
 	}
 
-	// Select all rows from users table
+	fmt.Println("Select all rows from users table")
 	if rows, err := db.Query(
 		context.Background(),
 		"SELECT id, name FROM users ORDER BY id ASC",
@@ -65,7 +65,7 @@ func main() {
 		panic(fmt.Sprintf("%s", err))
 	}
 
-	// Update inside transaction
+	fmt.Println("Update inside transaction")
 	if err := db.Transaction(context.Background(), func(ctx context.Context, tx *common.Tx) error {
 		if _, err := tx.Exec(ctx, "UPDATE users SET name=$1 WHERE id=$2", "John", 1); err != nil {
 			return err
@@ -78,7 +78,7 @@ func main() {
 		panic(fmt.Sprintf("%s", err))
 	}
 
-	// Select all rows from users again
+	fmt.Println("Select all rows from users again")
 	if rows, err := db.Query(
 		context.Background(),
 		"SELECT id, name FROM users ORDER BY id ASC",
