@@ -54,17 +54,20 @@ func log(w io.Writer, m string, s time.Time, e error, tx bool, query string, arg
 		astr = fmt.Sprintf(" (%v)", args)
 	}
 
+	bold := "0"
+	color := "33"
+
 	estr := " (nil)"
 	if e != nil {
-		estr = " \033[0m\033[0;31m(" + e.Error() + ")"
+		color = "31"
+		estr = " (" + e.Error() + ")"
 	}
 
-	color := "0;33"
 	if tx {
-		color = "1;33"
+		bold = "1"
 	}
 
-	res := fmt.Sprintln("\033[" + color + "m[SQL]" + tmsg + qmsg + astr + estr + fmt.Sprintf(" %.3f ms", time.Since(s).Seconds()) + "\033[0m")
+	res := fmt.Sprintln("\033[" + bold + ";" + color + "m[SQL]" + tmsg + qmsg + astr + estr + fmt.Sprintf(" %.3f ms", time.Since(s).Seconds()) + "\033[0m")
 	fmt.Fprint(w, res)
 	return res
 }

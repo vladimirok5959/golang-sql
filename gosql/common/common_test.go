@@ -36,17 +36,17 @@ var _ = Describe("common", func() {
 
 			It("with error message", func() {
 				str := common.Log(io.Discard, "[func Exec]", time.Now(), fmt.Errorf("Exec error"), false, "select * from users")
-				Expect(str).To(Equal("\x1b[0;33m[SQL] [func Exec] select * from users (empty) \x1b[0m\x1b[0;31m(Exec error) 0.000 ms\x1b[0m\n"))
+				Expect(str).To(Equal("\x1b[0;31m[SQL] [func Exec] select * from users (empty) (Exec error) 0.000 ms\x1b[0m\n"))
 			})
 
 			It("with transaction flag", func() {
 				str := common.Log(io.Discard, "[func Exec]", time.Now(), fmt.Errorf("Exec error"), true, "select * from users")
-				Expect(str).To(Equal("\x1b[1;33m[SQL] [TX] [func Exec] select * from users (empty) \x1b[0m\x1b[0;31m(Exec error) 0.000 ms\x1b[0m\n"))
+				Expect(str).To(Equal("\x1b[1;31m[SQL] [TX] [func Exec] select * from users (empty) (Exec error) 0.000 ms\x1b[0m\n"))
 			})
 
 			It("with sql query arguments", func() {
 				str := common.Log(io.Discard, "[func Exec]", time.Now(), fmt.Errorf("Exec error"), true, "select * from users where id=$1", 100)
-				Expect(str).To(Equal("\x1b[1;33m[SQL] [TX] [func Exec] select * from users where id=$1 ([100]) \x1b[0m\x1b[0;31m(Exec error) 0.000 ms\x1b[0m\n"))
+				Expect(str).To(Equal("\x1b[1;31m[SQL] [TX] [func Exec] select * from users where id=$1 ([100]) (Exec error) 0.000 ms\x1b[0m\n"))
 			})
 		})
 	})
