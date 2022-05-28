@@ -22,7 +22,7 @@ type Engine interface {
 	Prepare(ctx context.Context, query string) (*sql.Stmt, error)
 	Query(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 	QueryRow(ctx context.Context, query string, args ...any) *sql.Row
-	Transaction(ctx context.Context, queries qFunc) error
+	Transaction(ctx context.Context, queries queryFunc) error
 }
 
 func ParseUrl(dbURL string) (*url.URL, error) {
