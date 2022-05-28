@@ -7,6 +7,8 @@ import (
 	"github.com/vladimirok5959/golang-sql/gosql/engine"
 )
 
+type Tx = common.Tx
+
 func Open(dbURL, migrationsDir string, debug bool) (common.Engine, error) {
 	databaseURL, err := common.ParseUrl(dbURL)
 	if err != nil {

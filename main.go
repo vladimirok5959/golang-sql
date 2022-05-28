@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/vladimirok5959/golang-sql/gosql"
-	"github.com/vladimirok5959/golang-sql/gosql/common"
 )
 
 func main() {
@@ -66,7 +65,7 @@ func main() {
 	}
 
 	fmt.Println("Update inside transaction")
-	if err := db.Transaction(context.Background(), func(ctx context.Context, tx *common.Tx) error {
+	if err := db.Transaction(context.Background(), func(ctx context.Context, tx *gosql.Tx) error {
 		if _, err := tx.Exec(ctx, "UPDATE users SET name=$1 WHERE id=$2", "John", 1); err != nil {
 			return err
 		}
