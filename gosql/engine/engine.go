@@ -13,7 +13,7 @@ type mysql struct {
 }
 
 func NewMySQL(dbURL *url.URL, migrationsDir string, debug bool) (common.Engine, error) {
-	db, err := common.OpenDB(dbURL, migrationsDir)
+	db, err := common.OpenDB(dbURL, migrationsDir, debug)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ type postgresql struct {
 }
 
 func NewPostgreSQL(dbURL *url.URL, migrationsDir string, debug bool) (common.Engine, error) {
-	db, err := common.OpenDB(dbURL, migrationsDir)
+	db, err := common.OpenDB(dbURL, migrationsDir, debug)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ type sqlite struct {
 }
 
 func NewSQLite(dbURL *url.URL, migrationsDir string, debug bool) (common.Engine, error) {
-	db, err := common.OpenDB(dbURL, migrationsDir)
+	db, err := common.OpenDB(dbURL, migrationsDir, debug)
 	if err != nil {
 		return nil, err
 	}

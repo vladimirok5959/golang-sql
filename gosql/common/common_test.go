@@ -160,7 +160,7 @@ var _ = Describe("common", func() {
 			// 	databaseURL, err := url.Parse("mysql://root:root@127.0.0.1:3306/gosql")
 			// 	Expect(err).To(Succeed())
 
-			// 	db, err := common.OpenDB(databaseURL, migrationsDir)
+			// 	db, err := common.OpenDB(databaseURL, migrationsDir, false)
 			// 	Expect(err).To(Succeed())
 			// 	Expect(db.Close()).To(Succeed())
 			// })
@@ -170,7 +170,7 @@ var _ = Describe("common", func() {
 			// 	databaseURL, err := url.Parse("postgres://root:root@127.0.0.1:5432/gosql?sslmode=disable")
 			// 	Expect(err).To(Succeed())
 
-			// 	db, err := common.OpenDB(databaseURL, migrationsDir)
+			// 	db, err := common.OpenDB(databaseURL, migrationsDir, false)
 			// 	Expect(err).To(Succeed())
 			// 	Expect(db.Close()).To(Succeed())
 			// })
@@ -183,7 +183,7 @@ var _ = Describe("common", func() {
 				databaseURL, err := url.Parse("sqlite://" + f.Name())
 				Expect(err).To(Succeed())
 
-				db, err := common.OpenDB(databaseURL, migrationsDir)
+				db, err := common.OpenDB(databaseURL, migrationsDir, false)
 				Expect(err).To(Succeed())
 				Expect(db.Close()).To(Succeed())
 			})

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -104,7 +105,7 @@ func ParseUrl(dbURL string) (*url.URL, error) {
 	return databaseURL, nil
 }
 
-func OpenDB(databaseURL *url.URL, migrationsDir string) (*sql.DB, error) {
+func OpenDB(databaseURL *url.URL, migrationsDir string, debug bool) (*sql.DB, error) {
 	mate := dbmate.New(databaseURL)
 
 	mate.AutoDumpSchema = false
@@ -122,9 +123,20 @@ func OpenDB(databaseURL *url.URL, migrationsDir string) (*sql.DB, error) {
 		return nil, fmt.Errorf("DB migration error: %w", err)
 	}
 
-	db, err := driver.Open()
-	if err != nil {
-		return nil, fmt.Errorf("DB open error: %w", err)
+	var db *sql.DB
+
+	if debug {
+		t := time.Now()
+		db, err = driver.Open()
+		log(os.Stdout, "[func Open]", t, err, false, "")
+		if err != nil {
+			return nil, fmt.Errorf("DB open error: %w", err)
+		}
+	} else {
+		db, err = driver.Open()
+		if err != nil {
+			return nil, fmt.Errorf("DB open error: %w", err)
+		}
 	}
 
 	return db, nil
