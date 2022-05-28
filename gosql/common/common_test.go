@@ -50,6 +50,18 @@ var _ = Describe("common", func() {
 		})
 	})
 
+	Context("fixQuery", func() {
+		It("replace param for MySQL driver", func() {
+			sql := "select id, name from users where id=$1"
+			Expect(common.FixQuery(sql)).To(Equal("select id, name from users where id=?"))
+		})
+
+		It("replace all params for MySQL driver", func() {
+			sql := "insert into users set name=$1 where id=$2"
+			Expect(common.FixQuery(sql)).To(Equal("insert into users set name=? where id=?"))
+		})
+	})
+
 	Context("ParseUrl", func() {
 		Context("Success", func() {
 			It("for MySQL", func() {
