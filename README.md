@@ -4,16 +4,16 @@ Go bindings library for MySQL, PostgreSQL and SQLite
 
 ## Features
 
-- Multiple storages MySQL, PostgreSQL, SQLite
-- Debug mode for SQL queries
+- Multiple storages: MySQL, PostgreSQL, SQLite
+- Debug mode for tracking SQL queries
 - Transactions is supported
 - Transactions helpers
 - Database migrations
 - Simple usage
 
-This library allow you to faster make your development if you need to use/support multiple database engines such MySQL, PostgreSQL and SQLite. For example you can make web service and give ability to choose storage type. Or you can use SQLite for tests or for demo version and MySQL or PostgreSQL for production. Migrations (thanks to dbmate) is suported out of box and full SQL messages for debugging. Note: please use PostgreSQL parameter placeholders even if MySQL is used, it will be automatically replaced with `?`
+This library allow you to faster make your development if you need to use/support multiple database engines such MySQL, PostgreSQL or/and SQLite. For example you can make web service and give ability to choose storage type. Or you can use SQLite for tests or for demo version and MySQL or PostgreSQL for production. Migrations (thanks to dbmate) is suported out of box and full SQL messages for debugging. Note: please use PostgreSQL parameter placeholders even if MySQL is used, it will be automatically replaced with `?`
 
-Used [amacneil/dbmate](https://github.com/amacneil/dbmate) inside the project for creating connection (please review dbmate docs) and for migrations, so next schemes is supported:
+Used [amacneil/dbmate](https://github.com/amacneil/dbmate) inside the project for creating connections (please review dbmate docs) and for migrations, so next schemes is supported:
 
 ```sh
 # MySQL connection:
