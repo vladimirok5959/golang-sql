@@ -67,7 +67,7 @@ func log(w io.Writer, m string, s time.Time, e error, tx bool, query string, arg
 	}
 
 	res := fmt.Sprintln("\033[" + color + "m[SQL]" + tmsg + qmsg + astr + estr + fmt.Sprintf(" %.3f ms", time.Since(s).Seconds()) + "\033[0m")
-	fmt.Fprintln(w, res)
+	fmt.Fprint(w, res)
 	return res
 }
 
