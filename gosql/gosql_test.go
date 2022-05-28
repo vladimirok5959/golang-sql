@@ -37,12 +37,12 @@ var _ = Describe("gosql", func() {
 		// 		err = db.QueryRow(ctx, sql, 1).Scan(&id, &name)
 		// 		Expect(err).To(Succeed())
 		// 		Expect(id).To(Equal(1))
-		// 		Expect(name).To(Equal("alice"))
+		// 		Expect(name).To(Equal("Alice"))
 
 		// 		err = db.QueryRow(ctx, sql, 2).Scan(&id, &name)
 		// 		Expect(err).To(Succeed())
 		// 		Expect(id).To(Equal(2))
-		// 		Expect(name).To(Equal("bob"))
+		// 		Expect(name).To(Equal("Bob"))
 
 		// 		Expect(db.Close()).To(Succeed())
 		// 	})
@@ -57,12 +57,12 @@ var _ = Describe("gosql", func() {
 		// 		err = db.QueryRow(ctx, sql, 1).Scan(&id, &name)
 		// 		Expect(err).To(Succeed())
 		// 		Expect(id).To(Equal(1))
-		// 		Expect(name).To(Equal("alice"))
+		// 		Expect(name).To(Equal("Alice"))
 
 		// 		err = db.QueryRow(ctx, sql, 2).Scan(&id, &name)
 		// 		Expect(err).To(Succeed())
 		// 		Expect(id).To(Equal(2))
-		// 		Expect(name).To(Equal("bob"))
+		// 		Expect(name).To(Equal("Bob"))
 
 		// 		Expect(db.Close()).To(Succeed())
 		// 	})
@@ -80,12 +80,12 @@ var _ = Describe("gosql", func() {
 				err = db.QueryRow(ctx, sql, 1).Scan(&id, &name)
 				Expect(err).To(Succeed())
 				Expect(id).To(Equal(1))
-				Expect(name).To(Equal("alice"))
+				Expect(name).To(Equal("Alice"))
 
 				err = db.QueryRow(ctx, sql, 2).Scan(&id, &name)
 				Expect(err).To(Succeed())
 				Expect(id).To(Equal(2))
-				Expect(name).To(Equal("bob"))
+				Expect(name).To(Equal("Bob"))
 
 				Expect(db.Close()).To(Succeed())
 			})

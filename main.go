@@ -35,7 +35,7 @@ func main() {
 	if _, err := db.Exec(
 		context.Background(),
 		"INSERT INTO users (id, name) VALUES ($1, $2)",
-		5, "john",
+		5, "John",
 	); err != nil {
 		panic(fmt.Sprintf("%s", err))
 	}
