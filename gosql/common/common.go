@@ -50,7 +50,7 @@ func log(w io.Writer, fname string, start time.Time, err error, tx bool, query s
 
 	// Function name
 	if fname != "" {
-		values = append(values, fname)
+		values = append(values, "[func "+fname+"]")
 	}
 
 	// SQL query
@@ -131,7 +131,7 @@ func OpenDB(databaseURL *url.URL, migrationsDir string, debug bool) (*sql.DB, er
 	if debug {
 		t := time.Now()
 		db, err = driver.Open()
-		log(os.Stdout, "[func Open]", t, err, false, "")
+		log(os.Stdout, "Open", t, err, false, "")
 		if err != nil {
 			return nil, fmt.Errorf("DB open error: %w", err)
 		}
