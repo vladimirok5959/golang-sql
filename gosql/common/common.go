@@ -18,6 +18,7 @@ type Engine interface {
 	Close() error
 	Exec(ctx context.Context, query string, args ...any) (sql.Result, error)
 	Ping(context.Context) error
+	Prepare(ctx context.Context, query string) (*sql.Stmt, error)
 	Query(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 	QueryRow(ctx context.Context, query string, args ...any) *sql.Row
 }

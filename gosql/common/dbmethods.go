@@ -7,7 +7,7 @@ import (
 )
 
 type DBMethods struct {
-	*sql.DB
+	DB *sql.DB
 
 	Driver string
 }
@@ -21,12 +21,20 @@ func (db *DBMethods) fixQuery(query string) string {
 	return query
 }
 
+func (db *DBMethods) Close() error {
+	return db.DB.Close()
+}
+
 func (db *DBMethods) Exec(ctx context.Context, query string, args ...any) (sql.Result, error) {
 	return db.DB.ExecContext(ctx, db.fixQuery(query), args...)
 }
 
 func (db *DBMethods) Ping(ctx context.Context) error {
-	return db.PingContext(ctx)
+	return db.DB.PingContext(ctx)
+}
+
+func (db *DBMethods) Prepare(ctx context.Context, query string) (*sql.Stmt, error) {
+	return db.DB.PrepareContext(ctx, db.fixQuery(query))
 }
 
 func (db *DBMethods) Query(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
