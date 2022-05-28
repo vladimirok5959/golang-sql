@@ -32,42 +32,52 @@ var rLogSpacesAll = regexp.MustCompile(`[\s\t]+`)
 var rLogSpacesEnd = regexp.MustCompile(`[\s\t]+;$`)
 var rSqlParam = regexp.MustCompile(`\$\d+`)
 
-func log(w io.Writer, m string, s time.Time, e error, tx bool, query string, args ...any) string {
-	var tmsg string
-
-	if tx {
-		tmsg = " [TX]"
-	}
-	if m != "" {
-		tmsg = tmsg + " " + m
-	}
-
-	qmsg := query
-	if qmsg != "" {
-		qmsg = strings.Trim(rLogSpacesAll.ReplaceAllString(qmsg, " "), " ")
-		qmsg = rLogSpacesEnd.ReplaceAllString(qmsg, ";")
-		qmsg = " " + qmsg
-	}
-
-	astr := " (empty)"
-	if len(args) > 0 {
-		astr = fmt.Sprintf(" (%v)", args)
-	}
+func log(w io.Writer, fname string, start time.Time, err error, tx bool, query string, args ...any) string {
+	var values []string
 
 	bold := "0"
 	color := "33"
 
-	estr := " (nil)"
-	if e != nil {
-		color = "31"
-		estr = " (" + e.Error() + ")"
-	}
-
+	// Transaction or not
 	if tx {
 		bold = "1"
+		values = append(values, "[TX]")
 	}
 
-	res := fmt.Sprintln("\033[" + bold + ";" + color + "m[SQL]" + tmsg + qmsg + astr + estr + fmt.Sprintf(" %.3f ms", time.Since(s).Seconds()) + "\033[0m")
+	// Function name
+	if fname != "" {
+		values = append(values, fname)
+	}
+
+	// SQL query
+	if query != "" {
+		values = append(values, rLogSpacesEnd.ReplaceAllString(
+			strings.Trim(rLogSpacesAll.ReplaceAllString(query, " "), " "), ";",
+		))
+	}
+
+	// Params
+	if len(args) > 0 {
+		values = append(values, fmt.Sprintf("(%v)", args))
+	} else {
+		values = append(values, "(empty)")
+	}
+
+	// Error
+	if err != nil {
+		color = "31"
+		values = append(values, "("+err.Error()+")")
+	} else {
+		values = append(values, "(nil)")
+	}
+
+	// Execute time with close color symbols
+	values = append(values, fmt.Sprintf("%.3f ms\033[0m", time.Since(start).Seconds()))
+
+	// Prepend start caption with colors
+	values = append([]string{"\033[" + bold + ";" + color + "m[SQL]"}, values...)
+
+	res := fmt.Sprintln(strings.Join(values, " "))
 	fmt.Fprint(w, res)
 	return res
 }
