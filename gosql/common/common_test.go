@@ -104,25 +104,25 @@ var _ = Describe("common", func() {
 		})
 
 		Context("Success", func() {
-			// // Note: you need to up MySQL server for this test case
-			// It("for MySQL", func() {
-			// 	databaseURL, err := url.Parse("mysql://root:root@127.0.0.1:3306/gosql")
-			// 	Expect(err).To(Succeed())
+			// Note: you need to up MySQL server for this test case
+			It("for MySQL", func() {
+				databaseURL, err := url.Parse("mysql://root:root@127.0.0.1:3306/gosql")
+				Expect(err).To(Succeed())
 
-			// 	db, err := common.OpenDB(databaseURL, migrationsDir)
-			// 	Expect(err).To(Succeed())
-			// 	Expect(db.Close()).To(Succeed())
-			// })
+				db, err := common.OpenDB(databaseURL, migrationsDir)
+				Expect(err).To(Succeed())
+				Expect(db.Close()).To(Succeed())
+			})
 
-			// // Note: you need to up PostgreSQL server for this test case
-			// It("for PostgreSQL", func() {
-			// 	databaseURL, err := url.Parse("postgres://root:root@127.0.0.1:5432/gosql?sslmode=disable")
-			// 	Expect(err).To(Succeed())
+			// Note: you need to up PostgreSQL server for this test case
+			It("for PostgreSQL", func() {
+				databaseURL, err := url.Parse("postgres://root:root@127.0.0.1:5432/gosql?sslmode=disable")
+				Expect(err).To(Succeed())
 
-			// 	db, err := common.OpenDB(databaseURL, migrationsDir)
-			// 	Expect(err).To(Succeed())
-			// 	Expect(db.Close()).To(Succeed())
-			// })
+				db, err := common.OpenDB(databaseURL, migrationsDir)
+				Expect(err).To(Succeed())
+				Expect(db.Close()).To(Succeed())
+			})
 
 			It("for SQLite", func() {
 				f, err := ioutil.TempFile("", "go-sqlite3-test-")
