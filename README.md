@@ -2,10 +2,14 @@
 
 Go bindings library for MySQL, PostgreSQL and SQLite
 
-Used [amacneil/dbmate](https://github.com/amacneil/dbmate) inside the project for creating connection (please review dbmate docs), so next schemes is supported:
+## What is this
+
+This library allow you to faster make your development if you need to use/support multiple database engines such MySQL, PostgreSQL and SQLite. For example you can make web service and give ability to choose storage type. Or you can use SQLite for tests or for demo version and MySQL or PostgreSQL for production. Migrations (thanks to dbmate) is suported out of box and full SQL messages for debugging. Note: please use PostgreSQL parameter placeholders even if MySQL is used, it will be automatically replaced with `?`
+
+Used [amacneil/dbmate](https://github.com/amacneil/dbmate) inside the project for creating connection (please review dbmate docs) and for migrations, so next schemes is supported:
 
 ```sh
-# MySQL TCP connection:
+# MySQL connection:
 mysql://username:password@127.0.0.1:3306/database?parseTime=true
 
 # MySQL through the socket:
