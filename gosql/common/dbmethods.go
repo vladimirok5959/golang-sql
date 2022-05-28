@@ -97,6 +97,18 @@ func (db *DBMethods) QueryRow(ctx context.Context, query string, args ...any) *s
 	return db.DB.QueryRowContext(ctx, db.fixQuery(query), args...)
 }
 
+func (db *DBMethods) SetConnMaxLifetime(d time.Duration) {
+	db.DB.SetConnMaxLifetime(d)
+}
+
+func (db *DBMethods) SetMaxIdleConns(n int) {
+	db.DB.SetMaxIdleConns(n)
+}
+
+func (db *DBMethods) SetMaxOpenConns(n int) {
+	db.DB.SetMaxOpenConns(n)
+}
+
 func (db *DBMethods) Transaction(ctx context.Context, queries func(ctx context.Context, tx *Tx) error) error {
 	if queries == nil {
 		return fmt.Errorf("queries is not set for transaction")
