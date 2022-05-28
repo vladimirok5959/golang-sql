@@ -30,3 +30,8 @@ postgresql://username:password@127.0.0.1:5432/database?sslmode=disable
 sqlite:///data/database.sqlite
 sqlite3:///data/database.sqlite
 ```
+
+## Examples
+
+```go
+```
