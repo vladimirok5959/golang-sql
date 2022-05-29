@@ -15,109 +15,109 @@ type DBMethods struct {
 	Driver string
 }
 
-func (db *DBMethods) fixQuery(query string) string {
-	if db.Driver == "mysql" {
+func (d *DBMethods) fixQuery(query string) string {
+	if d.Driver == "mysql" {
 		return fixQuery(query)
 	}
 	return query
 }
 
-func (db *DBMethods) Begin(ctx context.Context, opts *sql.TxOptions) (*Tx, error) {
-	if db.Debug {
-		t := time.Now()
-		tx, err := db.DB.BeginTx(ctx, opts)
-		log(os.Stdout, "Begin", t, err, true, "")
-		return &Tx{tx, db.Debug, db.Driver, t}, err
+func (d *DBMethods) log(fname string, start time.Time, err error, tx bool, query string, args ...any) {
+	if d.Debug {
+		log(os.Stdout, fname, start, err, tx, query, args...)
 	}
+}
 
-	tx, err := db.DB.BeginTx(ctx, opts)
-	if err != nil {
-		return nil, err
+func (d *DBMethods) Begin(ctx context.Context, opts *sql.TxOptions) (*Tx, error) {
+	start := time.Now()
+	tx, err := d.DB.BeginTx(ctx, opts)
+	d.log("Begin", start, err, true, "")
+	return &Tx{tx, d.Debug, d.Driver, start}, err
+}
+
+func (d *DBMethods) Close() error {
+	start := time.Now()
+	err := d.DB.Close()
+	d.log("Close", start, err, false, "")
+	return err
+}
+
+func (d *DBMethods) Each(ctx context.Context, query string, callback func(ctx context.Context, rows *Rows) error) error {
+	if callback == nil {
+		return fmt.Errorf("callback is not set")
 	}
-	return &Tx{tx, db.Debug, db.Driver, time.Now()}, err
-}
-
-func (db *DBMethods) Close() error {
-	if db.Debug {
-		t := time.Now()
-		err := db.DB.Close()
-		log(os.Stdout, "Close", t, err, false, "")
-		return err
-	}
-	return db.DB.Close()
-}
-
-func (db *DBMethods) Exec(ctx context.Context, query string, args ...any) (sql.Result, error) {
-	if db.Debug {
-		t := time.Now()
-		res, err := db.DB.ExecContext(ctx, db.fixQuery(query), args...)
-		log(os.Stdout, "Exec", t, err, false, db.fixQuery(query), args...)
-		return res, err
-	}
-	return db.DB.ExecContext(ctx, db.fixQuery(query), args...)
-}
-
-func (db *DBMethods) Ping(ctx context.Context) error {
-	if db.Debug {
-		t := time.Now()
-		err := db.DB.PingContext(ctx)
-		log(os.Stdout, "Ping", t, err, false, "")
-		return err
-	}
-	return db.DB.PingContext(ctx)
-}
-
-func (db *DBMethods) Prepare(ctx context.Context, query string) (*sql.Stmt, error) {
-	if db.Debug {
-		t := time.Now()
-		stm, err := db.DB.PrepareContext(ctx, db.fixQuery(query))
-		log(os.Stdout, "Prepare", t, err, false, db.fixQuery(query))
-		return stm, err
-	}
-	return db.DB.PrepareContext(ctx, db.fixQuery(query))
-}
-
-func (db *DBMethods) Query(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
-	if db.Debug {
-		t := time.Now()
-		rows, err := db.DB.QueryContext(ctx, db.fixQuery(query), args...)
-		log(os.Stdout, "Query", t, err, false, db.fixQuery(query), args...)
-		return rows, err
-	}
-	return db.DB.QueryContext(ctx, db.fixQuery(query), args...)
-}
-
-func (db *DBMethods) QueryRow(ctx context.Context, query string, args ...any) *sql.Row {
-	if db.Debug {
-		t := time.Now()
-		row := db.DB.QueryRowContext(ctx, db.fixQuery(query), args...)
-		log(os.Stdout, "QueryRow", t, nil, false, db.fixQuery(query), args...)
-		return row
-	}
-	return db.DB.QueryRowContext(ctx, db.fixQuery(query), args...)
-}
-
-func (db *DBMethods) SetConnMaxLifetime(d time.Duration) {
-	db.DB.SetConnMaxLifetime(d)
-}
-
-func (db *DBMethods) SetMaxIdleConns(n int) {
-	db.DB.SetMaxIdleConns(n)
-}
-
-func (db *DBMethods) SetMaxOpenConns(n int) {
-	db.DB.SetMaxOpenConns(n)
-}
-
-func (db *DBMethods) Transaction(ctx context.Context, queries func(ctx context.Context, tx *Tx) error) error {
-	if queries == nil {
-		return fmt.Errorf("queries is not set for transaction")
-	}
-	tx, err := db.Begin(ctx, nil)
+	rows, err := d.Query(ctx, query)
 	if err != nil {
 		return err
 	}
-	if err := queries(ctx, tx); err != nil {
+	defer rows.Close()
+	for rows.Next() {
+		if err := callback(ctx, rows); err != nil {
+			return err
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (d *DBMethods) Exec(ctx context.Context, query string, args ...any) (sql.Result, error) {
+	start := time.Now()
+	res, err := d.DB.ExecContext(ctx, d.fixQuery(query), args...)
+	d.log("Exec", start, err, false, d.fixQuery(query), args...)
+	return res, err
+}
+
+func (d *DBMethods) Ping(ctx context.Context) error {
+	start := time.Now()
+	err := d.DB.PingContext(ctx)
+	d.log("Ping", start, err, false, "")
+	return err
+}
+
+func (d *DBMethods) Prepare(ctx context.Context, query string) (*sql.Stmt, error) {
+	start := time.Now()
+	stm, err := d.DB.PrepareContext(ctx, d.fixQuery(query))
+	d.log("Prepare", start, err, false, d.fixQuery(query))
+	return stm, err
+}
+
+func (d *DBMethods) Query(ctx context.Context, query string, args ...any) (*Rows, error) {
+	start := time.Now()
+	rows, err := d.DB.QueryContext(ctx, d.fixQuery(query), args...)
+	d.log("Query", start, err, false, d.fixQuery(query), args...)
+	return &Rows{Rows: rows}, err
+}
+
+func (d *DBMethods) QueryRow(ctx context.Context, query string, args ...any) *Row {
+	start := time.Now()
+	row := d.DB.QueryRowContext(ctx, d.fixQuery(query), args...)
+	d.log("QueryRow", start, nil, false, d.fixQuery(query), args...)
+	return &Row{Row: row}
+}
+
+func (d *DBMethods) SetConnMaxLifetime(t time.Duration) {
+	d.DB.SetConnMaxLifetime(t)
+}
+
+func (d *DBMethods) SetMaxIdleConns(n int) {
+	d.DB.SetMaxIdleConns(n)
+}
+
+func (d *DBMethods) SetMaxOpenConns(n int) {
+	d.DB.SetMaxOpenConns(n)
+}
+
+func (d *DBMethods) Transaction(ctx context.Context, callback func(ctx context.Context, tx *Tx) error) error {
+	if callback == nil {
+		return fmt.Errorf("callback is not set")
+	}
+	tx, err := d.Begin(ctx, nil)
+	if err != nil {
+		return err
+	}
+	if err := callback(ctx, tx); err != nil {
 		rerr := tx.Rollback()
 		if rerr != nil {
 			return fmt.Errorf(

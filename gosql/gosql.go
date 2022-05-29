@@ -7,6 +7,10 @@ import (
 	"github.com/vladimirok5959/golang-sql/gosql/engine"
 )
 
+type Row = common.Row
+
+type Rows = common.Rows
+
 type Tx = common.Tx
 
 func Open(dbURL, migrationsDir string, debug bool) (common.Engine, error) {

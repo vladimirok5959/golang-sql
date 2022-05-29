@@ -21,11 +21,12 @@ import (
 type Engine interface {
 	Begin(ctx context.Context, opts *sql.TxOptions) (*Tx, error)
 	Close() error
+	Each(ctx context.Context, query string, logic func(ctx context.Context, rows *Rows) error) error
 	Exec(ctx context.Context, query string, args ...any) (sql.Result, error)
 	Ping(context.Context) error
 	Prepare(ctx context.Context, query string) (*sql.Stmt, error)
-	Query(ctx context.Context, query string, args ...any) (*sql.Rows, error)
-	QueryRow(ctx context.Context, query string, args ...any) *sql.Row
+	Query(ctx context.Context, query string, args ...any) (*Rows, error)
+	QueryRow(ctx context.Context, query string, args ...any) *Row
 	SetConnMaxLifetime(d time.Duration)
 	SetMaxIdleConns(n int)
 	SetMaxOpenConns(n int)
@@ -127,19 +128,13 @@ func OpenDB(databaseURL *url.URL, migrationsDir string, debug bool) (*sql.DB, er
 	}
 
 	var db *sql.DB
-
+	start := time.Now()
+	db, err = driver.Open()
 	if debug {
-		t := time.Now()
-		db, err = driver.Open()
-		log(os.Stdout, "Open", t, err, false, "")
-		if err != nil {
-			return nil, fmt.Errorf("DB open error: %w", err)
-		}
-	} else {
-		db, err = driver.Open()
-		if err != nil {
-			return nil, fmt.Errorf("DB open error: %w", err)
-		}
+		log(os.Stdout, "Open", start, err, false, "")
+	}
+	if err != nil {
+		return nil, fmt.Errorf("DB open error: %w", err)
 	}
 
 	return db, nil

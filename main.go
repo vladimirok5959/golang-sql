@@ -83,26 +83,21 @@ func main() {
 	}
 
 	fmt.Println("Select all rows from users again")
-	if rows, err := db.Query(
+	if err := db.Each(
 		context.Background(),
 		"SELECT id, name FROM users ORDER BY id ASC",
-	); err == nil {
-		type rowStruct struct {
-			ID   int64
-			Name string
-		}
-		defer rows.Close()
-		for rows.Next() {
-			var row rowStruct
-			if err := rows.Scan(&row.ID, &row.Name); err != nil {
-				panic(fmt.Sprintf("%s", err))
+		func(ctx context.Context, rows *gosql.Rows) error {
+			var row struct {
+				ID   int64
+				Name string
+			}
+			if err := rows.Scans(&row); err != nil {
+				return err
 			}
 			fmt.Printf("ID: %d, Name: %s\n", row.ID, row.Name)
-		}
-		if err := rows.Err(); err != nil {
-			panic(fmt.Sprintf("%s", err))
-		}
-	} else {
+			return nil
+		},
+	); err != nil {
 		panic(fmt.Sprintf("%s", err))
 	}
 

@@ -13,60 +13,51 @@ type Tx struct {
 
 	Debug  bool
 	Driver string
-	t      time.Time
+	start  time.Time
 }
 
-func (db *Tx) fixQuery(query string) string {
-	if db.Driver == "mysql" {
+func (t *Tx) fixQuery(query string) string {
+	if t.Driver == "mysql" {
 		return fixQuery(query)
 	}
 	return query
 }
 
-func (db *Tx) Commit() error {
-	if db.Debug {
-		err := db.tx.Commit()
-		log(os.Stdout, "Commit", db.t, err, true, "")
-		return err
+func (t *Tx) log(fname string, start time.Time, err error, tx bool, query string, args ...any) {
+	if t.Debug {
+		log(os.Stdout, fname, start, err, tx, query, args...)
 	}
-	return db.tx.Commit()
 }
 
-func (db *Tx) Exec(ctx context.Context, query string, args ...any) (sql.Result, error) {
-	if db.Debug {
-		t := time.Now()
-		res, err := db.tx.ExecContext(ctx, db.fixQuery(query), args...)
-		log(os.Stdout, "Exec", t, err, true, db.fixQuery(query), args...)
-		return res, err
-	}
-	return db.tx.ExecContext(ctx, db.fixQuery(query), args...)
+func (t *Tx) Commit() error {
+	err := t.tx.Commit()
+	t.log("Commit", t.start, err, true, "")
+	return err
 }
 
-func (db *Tx) Query(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
-	if db.Debug {
-		t := time.Now()
-		rows, err := db.tx.QueryContext(ctx, db.fixQuery(query), args...)
-		log(os.Stdout, "Query", t, err, true, db.fixQuery(query), args...)
-		return rows, err
-	}
-	return db.tx.QueryContext(ctx, db.fixQuery(query), args...)
+func (t *Tx) Exec(ctx context.Context, query string, args ...any) (sql.Result, error) {
+	start := time.Now()
+	res, err := t.tx.ExecContext(ctx, t.fixQuery(query), args...)
+	t.log("Exec", start, err, true, t.fixQuery(query), args...)
+	return res, err
 }
 
-func (db *Tx) QueryRow(ctx context.Context, query string, args ...any) *sql.Row {
-	if db.Debug {
-		t := time.Now()
-		row := db.tx.QueryRowContext(ctx, db.fixQuery(query), args...)
-		log(os.Stdout, "QueryRow", t, nil, true, db.fixQuery(query), args...)
-		return row
-	}
-	return db.tx.QueryRowContext(ctx, db.fixQuery(query), args...)
+func (t *Tx) Query(ctx context.Context, query string, args ...any) (*Rows, error) {
+	start := time.Now()
+	rows, err := t.tx.QueryContext(ctx, t.fixQuery(query), args...)
+	t.log("Query", start, err, true, t.fixQuery(query), args...)
+	return &Rows{Rows: rows}, err
 }
 
-func (db *Tx) Rollback() error {
-	if db.Debug {
-		err := db.tx.Rollback()
-		log(os.Stdout, "Rollback", db.t, err, true, "")
-		return err
-	}
-	return db.tx.Rollback()
+func (t *Tx) QueryRow(ctx context.Context, query string, args ...any) *Row {
+	start := time.Now()
+	row := t.tx.QueryRowContext(ctx, t.fixQuery(query), args...)
+	t.log("QueryRow", start, nil, true, t.fixQuery(query), args...)
+	return &Row{Row: row}
+}
+
+func (t *Tx) Rollback() error {
+	err := t.tx.Rollback()
+	t.log("Rollback", t.start, err, true, "")
+	return err
 }
