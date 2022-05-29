@@ -52,8 +52,13 @@ func (d *DBMethods) Each(ctx context.Context, query string, callback func(ctx co
 	}
 	defer rows.Close()
 	for rows.Next() {
-		if err := callback(ctx, rows); err != nil {
-			return err
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+			if err := callback(ctx, rows); err != nil {
+				return err
+			}
 		}
 	}
 	if err := rows.Err(); err != nil {
