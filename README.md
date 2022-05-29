@@ -39,22 +39,25 @@ $ go run main.go
 [SQL] [func SetConnMaxLifetime] (empty) (nil) 0.000 ms
 [SQL] [func SetMaxIdleConns] (empty) (nil) 0.000 ms
 [SQL] [func SetMaxOpenConns] (empty) (nil) 0.000 ms
-Insert some data to users table
+Inserting some data to users table
 [SQL] [func Exec] INSERT INTO users (id, name) VALUES ($1, $2) ([5 John]) (nil) 0.004 ms
-Select all rows from users table
+Selecting all rows from users table
 [SQL] [func Query] SELECT id, name FROM users ORDER BY id ASC (empty) (nil) 0.000 ms
 ID: 1, Name: Alice
 ID: 2, Name: Bob
 ID: 5, Name: John
-Update inside transaction
+Updating inside transaction
 [SQL] [TX] [func Begin] (empty) (nil) 0.000 ms
 [SQL] [TX] [func Exec] UPDATE users SET name=$1 WHERE id=$2 ([John 1]) (nil) 0.000 ms
 [SQL] [TX] [func Exec] UPDATE users SET name=$1 WHERE id=$2 ([Alice 5]) (nil) 0.000 ms
 [SQL] [TX] [func Commit] (empty) (nil) 0.005 ms
-Select all rows from users again
+Selecting all rows from users again
 [SQL] [func Query] SELECT id, name FROM users ORDER BY id ASC (empty) (nil) 0.000 ms
 ID: 1, Name: John
 ID: 2, Name: Bob
+ID: 5, Name: Alice
+Selecting specific user with ID: 5
+[SQL] [func QueryRow] SELECT id, name FROM users WHERE id=$1 ([5]) (nil) 0.000 ms
 ID: 5, Name: Alice
 [SQL] [func Close] (empty) (nil) 0.000 ms
 ```
