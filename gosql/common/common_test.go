@@ -15,6 +15,18 @@ import (
 )
 
 var _ = Describe("common", func() {
+	Context("fixQuery", func() {
+		It("replace param for MySQL driver", func() {
+			sql := "select id, name from users where id=$1"
+			Expect(common.FixQuery(sql)).To(Equal("select id, name from users where id=?"))
+		})
+
+		It("replace all params for MySQL driver", func() {
+			sql := "insert into users set name=$1 where id=$2"
+			Expect(common.FixQuery(sql)).To(Equal("insert into users set name=? where id=?"))
+		})
+	})
+
 	Context("log", func() {
 		Context("time", func() {
 			It("calculate one second", func() {
@@ -51,15 +63,19 @@ var _ = Describe("common", func() {
 		})
 	})
 
-	Context("fixQuery", func() {
-		It("replace param for MySQL driver", func() {
-			sql := "select id, name from users where id=$1"
-			Expect(common.FixQuery(sql)).To(Equal("select id, name from users where id=?"))
-		})
+	Context("scans", func() {
+		It("convert struct to array of pointers to this struct fields", func() {
+			var row struct {
+				ID    int64
+				Name  string
+				Value string
+			}
 
-		It("replace all params for MySQL driver", func() {
-			sql := "insert into users set name=$1 where id=$2"
-			Expect(common.FixQuery(sql)).To(Equal("insert into users set name=? where id=?"))
+			Expect(common.Scans(&row)).To(Equal([]any{
+				&row.ID,
+				&row.Name,
+				&row.Value,
+			}))
 		})
 	})
 

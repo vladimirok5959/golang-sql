@@ -1,4 +1,5 @@
 package common
 
-var Log = log
 var FixQuery = fixQuery
+var Log = log
+var Scans = scans

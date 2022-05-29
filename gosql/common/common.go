@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/url"
 	"os"
+	"reflect"
 	"regexp"
 	"strings"
 	"time"
@@ -33,9 +34,13 @@ type Engine interface {
 	Transaction(ctx context.Context, queries func(ctx context.Context, tx *Tx) error) error
 }
 
+var rSqlParam = regexp.MustCompile(`\$\d+`)
 var rLogSpacesAll = regexp.MustCompile(`[\s\t]+`)
 var rLogSpacesEnd = regexp.MustCompile(`[\s\t]+;$`)
-var rSqlParam = regexp.MustCompile(`\$\d+`)
+
+func fixQuery(query string) string {
+	return rSqlParam.ReplaceAllString(query, "?")
+}
 
 func log(w io.Writer, fname string, start time.Time, err error, tx bool, query string, args ...any) string {
 	var values []string
@@ -87,8 +92,13 @@ func log(w io.Writer, fname string, start time.Time, err error, tx bool, query s
 	return res
 }
 
-func fixQuery(query string) string {
-	return rSqlParam.ReplaceAllString(query, "?")
+func scans(row any) []any {
+	v := reflect.ValueOf(row).Elem()
+	res := make([]interface{}, v.NumField())
+	for i := 0; i < v.NumField(); i++ {
+		res[i] = v.Field(i).Addr().Interface()
+	}
+	return res
 }
 
 func ParseUrl(dbURL string) (*url.URL, error) {
