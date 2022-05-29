@@ -42,11 +42,11 @@ func (d *DBMethods) Close() error {
 	return err
 }
 
-func (d *DBMethods) Each(ctx context.Context, query string, callback func(ctx context.Context, rows *Rows) error) error {
+func (d *DBMethods) Each(ctx context.Context, query string, callback func(ctx context.Context, rows *Rows) error, args ...any) error {
 	if callback == nil {
 		return fmt.Errorf("callback is not set")
 	}
-	rows, err := d.Query(ctx, query)
+	rows, err := d.Query(ctx, query, args...)
 	if err != nil {
 		return err
 	}

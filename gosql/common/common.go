@@ -21,7 +21,7 @@ import (
 type Engine interface {
 	Begin(ctx context.Context, opts *sql.TxOptions) (*Tx, error)
 	Close() error
-	Each(ctx context.Context, query string, logic func(ctx context.Context, rows *Rows) error) error
+	Each(ctx context.Context, query string, logic func(ctx context.Context, rows *Rows) error, args ...any) error
 	Exec(ctx context.Context, query string, args ...any) (sql.Result, error)
 	Ping(context.Context) error
 	Prepare(ctx context.Context, query string) (*sql.Stmt, error)
