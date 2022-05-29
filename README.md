@@ -36,6 +36,9 @@ sqlite3:///data/database.sqlite
 ```sh
 $ go run main.go
 [SQL] [func Open] (empty) (nil) 0.000 ms
+[SQL] [func SetConnMaxLifetime] (empty) (nil) 0.000 ms
+[SQL] [func SetMaxIdleConns] (empty) (nil) 0.000 ms
+[SQL] [func SetMaxOpenConns] (empty) (nil) 0.000 ms
 Insert some data to users table
 [SQL] [func Exec] INSERT INTO users (id, name) VALUES ($1, $2) ([5 John]) (nil) 0.004 ms
 Select all rows from users table
