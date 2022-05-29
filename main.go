@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"time"
 
 	"github.com/vladimirok5959/golang-sql/gosql"
 )
@@ -29,6 +30,10 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("%s", err))
 	}
+
+	db.SetConnMaxLifetime(time.Minute * 60)
+	db.SetMaxIdleConns(8)
+	db.SetMaxOpenConns(8)
 
 	// DB struct here ./db/migrations/20220527233113_test_migration.sql
 	fmt.Println("Insert some data to users table")
