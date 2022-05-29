@@ -110,11 +110,12 @@ func main() {
 	err = db.QueryRow(context.Background(), "SELECT id, name FROM users WHERE id=$1", 5).Scans(&row)
 	if err != nil && err != sql.ErrNoRows {
 		panic(fmt.Sprintf("%s", err))
-	}
-	if err != sql.ErrNoRows {
-		fmt.Printf("ID: %d, Name: %s\n", row.ID, row.Name)
 	} else {
-		fmt.Printf("Record not found\n")
+		if err != sql.ErrNoRows {
+			fmt.Printf("ID: %d, Name: %s\n", row.ID, row.Name)
+		} else {
+			fmt.Printf("Record not found\n")
+		}
 	}
 
 	// Close DB connection
