@@ -98,15 +98,21 @@ func (d *DBMethods) QueryRow(ctx context.Context, query string, args ...any) *Ro
 }
 
 func (d *DBMethods) SetConnMaxLifetime(t time.Duration) {
+	start := time.Now()
 	d.DB.SetConnMaxLifetime(t)
+	d.log("SetConnMaxLifetime", start, nil, false, "")
 }
 
 func (d *DBMethods) SetMaxIdleConns(n int) {
+	start := time.Now()
 	d.DB.SetMaxIdleConns(n)
+	d.log("SetMaxIdleConns", start, nil, false, "")
 }
 
 func (d *DBMethods) SetMaxOpenConns(n int) {
+	start := time.Now()
 	d.DB.SetMaxOpenConns(n)
+	d.log("SetMaxOpenConns", start, nil, false, "")
 }
 
 func (d *DBMethods) Transaction(ctx context.Context, callback func(ctx context.Context, tx *Tx) error) error {
