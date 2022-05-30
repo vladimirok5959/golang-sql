@@ -119,7 +119,7 @@ func ParseUrl(dbURL string) (*url.URL, error) {
 	return databaseURL, nil
 }
 
-func OpenDB(databaseURL *url.URL, migrationsDir string, debug bool) (*sql.DB, error) {
+func OpenDB(databaseURL *url.URL, migrationsDir string, skipMigration bool, debug bool) (*sql.DB, error) {
 	mate := dbmate.New(databaseURL)
 
 	mate.AutoDumpSchema = false
@@ -133,8 +133,10 @@ func OpenDB(databaseURL *url.URL, migrationsDir string, debug bool) (*sql.DB, er
 		return nil, fmt.Errorf("DB get driver error: %w", err)
 	}
 
-	if err := mate.CreateAndMigrate(); err != nil {
-		return nil, fmt.Errorf("DB migration error: %w", err)
+	if !skipMigration {
+		if err := mate.CreateAndMigrate(); err != nil {
+			return nil, fmt.Errorf("DB migration error: %w", err)
+		}
 	}
 
 	var db *sql.DB

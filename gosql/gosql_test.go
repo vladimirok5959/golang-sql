@@ -31,7 +31,7 @@ var _ = Describe("gosql", func() {
 		// // Note: you need to up MySQL server for this test case
 		// Context("for MySQL", func() {
 		// 	It("open connection, migrate and select data", func() {
-		// 		db, err := gosql.Open("mysql://root:root@127.0.0.1:3306/gosql", migrationsDir, false)
+		// 		db, err := gosql.Open("mysql://root:root@127.0.0.1:3306/gosql", migrationsDir, false, false)
 		// 		Expect(err).To(Succeed())
 
 		// 		err = db.QueryRow(ctx, sql, 1).Scan(&id, &name)
@@ -51,7 +51,7 @@ var _ = Describe("gosql", func() {
 		// // Note: you need to up PostgreSQL server for this test case
 		// Context("for PostgreSQL", func() {
 		// 	It("open connection, migrate and select data", func() {
-		// 		db, err := gosql.Open("postgres://root:root@127.0.0.1:5432/gosql?sslmode=disable", migrationsDir, false)
+		// 		db, err := gosql.Open("postgres://root:root@127.0.0.1:5432/gosql?sslmode=disable", migrationsDir, false, false)
 		// 		Expect(err).To(Succeed())
 
 		// 		err = db.QueryRow(ctx, sql, 1).Scan(&id, &name)
@@ -74,7 +74,7 @@ var _ = Describe("gosql", func() {
 				Expect(err).To(Succeed())
 				f.Close()
 
-				db, err := gosql.Open("sqlite://"+f.Name(), migrationsDir, false)
+				db, err := gosql.Open("sqlite://"+f.Name(), migrationsDir, false, false)
 				Expect(err).To(Succeed())
 
 				err = db.QueryRow(ctx, sql, 1).Scan(&id, &name)
@@ -89,6 +89,20 @@ var _ = Describe("gosql", func() {
 
 				Expect(db.Close()).To(Succeed())
 			})
+		})
+
+		It("open connection and skip migration", func() {
+			f, err := ioutil.TempFile("", "go-sqlite-test-")
+			Expect(err).To(Succeed())
+			f.Close()
+
+			db, err := gosql.Open("sqlite://"+f.Name(), "", true, false)
+			Expect(err).To(Succeed())
+			Expect(db.Ping(ctx)).To(Succeed())
+
+			var size int
+			err = db.QueryRow(ctx, "select count(*) from users").Scan(&size)
+			Expect(err.Error()).To(Equal("no such table: users"))
 		})
 	})
 })

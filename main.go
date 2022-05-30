@@ -27,7 +27,7 @@ func main() {
 
 	// Open DB connection, SQLite is used as example
 	// You can use here MySQL or PostgreSQL, just change dbURL
-	db, err := gosql.Open("sqlite://"+f.Name(), migrationsDir, true)
+	db, err := gosql.Open("sqlite://"+f.Name(), migrationsDir, false, true)
 	if err != nil {
 		panic(fmt.Sprintf("%s", err))
 	}
