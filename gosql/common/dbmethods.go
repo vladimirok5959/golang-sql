@@ -107,6 +107,15 @@ func (d *DBMethods) QueryRowByID(ctx context.Context, id int64, row any) error {
 	return d.QueryRow(ctx, query, id).Scans(row)
 }
 
+func (d *DBMethods) RowExists(ctx context.Context, id int64, row any) bool {
+	var exists int
+	query := rowExistsString(row)
+	if err := d.QueryRow(ctx, query, id).Scan(&exists); err == nil && exists == 1 {
+		return true
+	}
+	return false
+}
+
 func (d *DBMethods) SetConnMaxLifetime(t time.Duration) {
 	start := time.Now()
 	d.DB.SetConnMaxLifetime(t)

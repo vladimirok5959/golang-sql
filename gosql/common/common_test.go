@@ -80,7 +80,7 @@ var _ = Describe("common", func() {
 	})
 
 	Context("queryRowByIDString", func() {
-		It("convert struct to select SQL query", func() {
+		It("convert struct to SQL query", func() {
 			var row struct {
 				ID    int64  `field:"id" table:"users"`
 				Name  string `field:"name"`
@@ -88,6 +88,18 @@ var _ = Describe("common", func() {
 			}
 
 			Expect(common.QueryRowByIDString(&row)).To(Equal(`SELECT id, name, value FROM users WHERE id = $1 LIMIT 1`))
+		})
+	})
+
+	Context("rowExistsString", func() {
+		It("convert struct to SQL query", func() {
+			var row struct {
+				ID    int64  `field:"id" table:"users"`
+				Name  string `field:"name"`
+				Value string `field:"value"`
+			}
+
+			Expect(common.RowExistsString(&row)).To(Equal(`SELECT 1 FROM users WHERE id = $1 LIMIT 1`))
 		})
 	})
 

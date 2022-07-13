@@ -61,6 +61,15 @@ func (t *Tx) QueryRowByID(ctx context.Context, id int64, row any) error {
 	return t.QueryRow(ctx, query, id).Scans(row)
 }
 
+func (t *Tx) RowExists(ctx context.Context, id int64, row any) bool {
+	var exists int
+	query := rowExistsString(row)
+	if err := t.QueryRow(ctx, query, id).Scan(&exists); err == nil && exists == 1 {
+		return true
+	}
+	return false
+}
+
 func (t *Tx) Rollback() error {
 	err := t.tx.Rollback()
 	t.log("Rollback", t.start, err, true, "")
