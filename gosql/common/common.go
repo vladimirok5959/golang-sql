@@ -28,6 +28,7 @@ type Engine interface {
 	Prepare(ctx context.Context, query string) (*sql.Stmt, error)
 	Query(ctx context.Context, query string, args ...any) (*Rows, error)
 	QueryRow(ctx context.Context, query string, args ...any) *Row
+	QueryRowByID(ctx context.Context, id int64, row any) error
 	SetConnMaxLifetime(d time.Duration)
 	SetMaxIdleConns(n int)
 	SetMaxOpenConns(n int)
@@ -99,6 +100,24 @@ func scans(row any) []any {
 		res[i] = v.Field(i).Addr().Interface()
 	}
 	return res
+}
+
+func queryRowByIDString(row any) string {
+	v := reflect.ValueOf(row).Elem()
+	t := v.Type()
+	var table string
+	fields := []string{}
+	for i := 0; i < t.NumField(); i++ {
+		if table == "" {
+			if tag := t.Field(i).Tag.Get("table"); tag != "" {
+				table = tag
+			}
+		}
+		if tag := t.Field(i).Tag.Get("field"); tag != "" {
+			fields = append(fields, tag)
+		}
+	}
+	return `SELECT ` + strings.Join(fields, ", ") + ` FROM ` + table + ` WHERE id = $1 LIMIT 1`
 }
 
 func ParseUrl(dbURL string) (*url.URL, error) {

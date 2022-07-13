@@ -56,6 +56,11 @@ func (t *Tx) QueryRow(ctx context.Context, query string, args ...any) *Row {
 	return &Row{Row: row}
 }
 
+func (t *Tx) QueryRowByID(ctx context.Context, id int64, row any) error {
+	query := queryRowByIDString(row)
+	return t.QueryRow(ctx, query, id).Scans(row)
+}
+
 func (t *Tx) Rollback() error {
 	err := t.tx.Rollback()
 	t.log("Rollback", t.start, err, true, "")

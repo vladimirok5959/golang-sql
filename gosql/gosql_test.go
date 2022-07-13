@@ -46,6 +46,23 @@ var _ = Describe("gosql", func() {
 
 		// 		Expect(db.Close()).To(Succeed())
 		// 	})
+
+		// 	It("open connection, migrate and select by ID", func() {
+		// 		db, err := gosql.Open("mysql://root:root@127.0.0.1:3306/gosql", migrationsDir, false, false)
+		// 		Expect(err).To(Succeed())
+
+		// 		var rowUser struct {
+		// 			ID   int64  `field:"id" table:"users"`
+		// 			Name string `field:"name"`
+		// 		}
+
+		// 		err = db.QueryRowByID(ctx, 1, &rowUser)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(rowUser.ID).To(Equal(int64(1)))
+		// 		Expect(rowUser.Name).To(Equal("Alice"))
+
+		// 		Expect(db.Close()).To(Succeed())
+		// 	})
 		// })
 
 		// // Note: you need to up PostgreSQL server for this test case
@@ -63,6 +80,23 @@ var _ = Describe("gosql", func() {
 		// 		Expect(err).To(Succeed())
 		// 		Expect(id).To(Equal(2))
 		// 		Expect(name).To(Equal("Bob"))
+
+		// 		Expect(db.Close()).To(Succeed())
+		// 	})
+
+		// 	It("open connection, migrate and select by ID", func() {
+		// 		db, err := gosql.Open("postgres://root:root@127.0.0.1:5432/gosql?sslmode=disable", migrationsDir, false, false)
+		// 		Expect(err).To(Succeed())
+
+		// 		var rowUser struct {
+		// 			ID   int64  `field:"id" table:"users"`
+		// 			Name string `field:"name"`
+		// 		}
+
+		// 		err = db.QueryRowByID(ctx, 1, &rowUser)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(rowUser.ID).To(Equal(int64(1)))
+		// 		Expect(rowUser.Name).To(Equal("Alice"))
 
 		// 		Expect(db.Close()).To(Succeed())
 		// 	})
@@ -86,6 +120,27 @@ var _ = Describe("gosql", func() {
 				Expect(err).To(Succeed())
 				Expect(id).To(Equal(2))
 				Expect(name).To(Equal("Bob"))
+
+				Expect(db.Close()).To(Succeed())
+			})
+
+			It("open connection, migrate and select by ID", func() {
+				f, err := ioutil.TempFile("", "go-sqlite-test-")
+				Expect(err).To(Succeed())
+				f.Close()
+
+				db, err := gosql.Open("sqlite://"+f.Name(), migrationsDir, false, false)
+				Expect(err).To(Succeed())
+
+				var rowUser struct {
+					ID   int64  `field:"id" table:"users"`
+					Name string `field:"name"`
+				}
+
+				err = db.QueryRowByID(ctx, 1, &rowUser)
+				Expect(err).To(Succeed())
+				Expect(rowUser.ID).To(Equal(int64(1)))
+				Expect(rowUser.Name).To(Equal("Alice"))
 
 				Expect(db.Close()).To(Succeed())
 			})

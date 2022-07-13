@@ -79,6 +79,18 @@ var _ = Describe("common", func() {
 		})
 	})
 
+	Context("queryRowByIDString", func() {
+		It("convert struct to select SQL query", func() {
+			var row struct {
+				ID    int64  `field:"id" table:"users"`
+				Name  string `field:"name"`
+				Value string `field:"value"`
+			}
+
+			Expect(common.QueryRowByIDString(&row)).To(Equal(`SELECT id, name, value FROM users WHERE id = $1 LIMIT 1`))
+		})
+	})
+
 	Context("ParseUrl", func() {
 		Context("Success", func() {
 			It("for MySQL", func() {

@@ -102,6 +102,11 @@ func (d *DBMethods) QueryRow(ctx context.Context, query string, args ...any) *Ro
 	return &Row{Row: row}
 }
 
+func (d *DBMethods) QueryRowByID(ctx context.Context, id int64, row any) error {
+	query := queryRowByIDString(row)
+	return d.QueryRow(ctx, query, id).Scans(row)
+}
+
 func (d *DBMethods) SetConnMaxLifetime(t time.Duration) {
 	start := time.Now()
 	d.DB.SetConnMaxLifetime(t)
