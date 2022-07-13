@@ -111,7 +111,7 @@ var _ = Describe("common", func() {
 				Value string `field:"value"`
 			}
 
-			Expect(common.DeleteRowByIDString(&row)).To(Equal(`DELETE FROM users WHERE id = $1 LIMIT 1`))
+			Expect(common.DeleteRowByIDString(&row)).To(Equal(`DELETE FROM users WHERE id = $1`))
 		})
 	})
 

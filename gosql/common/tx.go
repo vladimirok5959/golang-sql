@@ -35,6 +35,12 @@ func (t *Tx) Commit() error {
 	return err
 }
 
+func (t *Tx) DeleteRowByID(ctx context.Context, id int64, row any) error {
+	query := deleteRowByIDString(row)
+	_, err := t.Exec(ctx, query, id)
+	return err
+}
+
 func (t *Tx) Exec(ctx context.Context, query string, args ...any) (sql.Result, error) {
 	start := time.Now()
 	res, err := t.tx.ExecContext(ctx, t.fixQuery(query), args...)

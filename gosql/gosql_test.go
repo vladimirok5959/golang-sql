@@ -26,6 +26,20 @@ var _ = Describe("gosql", func() {
 			var err error
 			migrationsDir, err = filepath.Abs("../db/migrations")
 			Expect(err).To(Succeed())
+
+			// // Reset databases
+			// // Note: uncomment for MySQL and PostgreSQL tests
+			// var db common.Engine
+
+			// // MySQL
+			// db, err = gosql.Open("mysql://root:root@127.0.0.1:3306/gosql", "", true, false)
+			// Expect(err).To(Succeed())
+			// _, _ = db.Exec(ctx, "DROP TABLE schema_migrations, users")
+
+			// // PostgreSQL
+			// db, err = gosql.Open("postgres://root:root@127.0.0.1:5432/gosql?sslmode=disable", "", true, false)
+			// Expect(err).To(Succeed())
+			// _, _ = db.Exec(ctx, "DROP TABLE schema_migrations, users")
 		})
 
 		// // Note: you need to up MySQL server for this test case
@@ -81,6 +95,30 @@ var _ = Describe("gosql", func() {
 
 		// 		Expect(db.Close()).To(Succeed())
 		// 	})
+
+		// 	It("open connection, migrate and delete row", func() {
+		// 		db, err := gosql.Open("mysql://root:root@127.0.0.1:3306/gosql", migrationsDir, false, false)
+		// 		Expect(err).To(Succeed())
+
+		// 		var rowUser struct {
+		// 			ID   int64  `field:"id" table:"users"`
+		// 			Name string `field:"name"`
+		// 		}
+
+		// 		var size int
+
+		// 		Expect(db.DeleteRowByID(ctx, 2, &rowUser)).To(Succeed())
+		// 		err = db.QueryRow(ctx, "select count(*) from users").Scan(&size)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(size).To(Equal(1))
+
+		// 		Expect(db.DeleteRowByID(ctx, 1, &rowUser)).To(Succeed())
+		// 		err = db.QueryRow(ctx, "select count(*) from users").Scan(&size)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(size).To(Equal(0))
+
+		// 		Expect(db.Close()).To(Succeed())
+		// 	})
 		// })
 
 		// // Note: you need to up PostgreSQL server for this test case
@@ -133,6 +171,30 @@ var _ = Describe("gosql", func() {
 		// 		Expect(db.RowExists(ctx, 3, &rowUser)).To(BeFalse())
 		// 		Expect(db.RowExists(ctx, 4, &rowUser)).To(BeFalse())
 		// 		Expect(db.RowExists(ctx, 5, &rowUser)).To(BeFalse())
+
+		// 		Expect(db.Close()).To(Succeed())
+		// 	})
+
+		// 	It("open connection, migrate and delete row", func() {
+		// 		db, err := gosql.Open("postgres://root:root@127.0.0.1:5432/gosql?sslmode=disable", migrationsDir, false, false)
+		// 		Expect(err).To(Succeed())
+
+		// 		var rowUser struct {
+		// 			ID   int64  `field:"id" table:"users"`
+		// 			Name string `field:"name"`
+		// 		}
+
+		// 		var size int
+
+		// 		Expect(db.DeleteRowByID(ctx, 2, &rowUser)).To(Succeed())
+		// 		err = db.QueryRow(ctx, "select count(*) from users").Scan(&size)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(size).To(Equal(1))
+
+		// 		Expect(db.DeleteRowByID(ctx, 1, &rowUser)).To(Succeed())
+		// 		err = db.QueryRow(ctx, "select count(*) from users").Scan(&size)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(size).To(Equal(0))
 
 		// 		Expect(db.Close()).To(Succeed())
 		// 	})
@@ -199,6 +261,34 @@ var _ = Describe("gosql", func() {
 				Expect(db.RowExists(ctx, 3, &rowUser)).To(BeFalse())
 				Expect(db.RowExists(ctx, 4, &rowUser)).To(BeFalse())
 				Expect(db.RowExists(ctx, 5, &rowUser)).To(BeFalse())
+
+				Expect(db.Close()).To(Succeed())
+			})
+
+			It("open connection, migrate and delete row", func() {
+				f, err := ioutil.TempFile("", "go-sqlite-test-")
+				Expect(err).To(Succeed())
+				f.Close()
+
+				db, err := gosql.Open("sqlite://"+f.Name(), migrationsDir, false, false)
+				Expect(err).To(Succeed())
+
+				var rowUser struct {
+					ID   int64  `field:"id" table:"users"`
+					Name string `field:"name"`
+				}
+
+				var size int
+
+				Expect(db.DeleteRowByID(ctx, 2, &rowUser)).To(Succeed())
+				err = db.QueryRow(ctx, "select count(*) from users").Scan(&size)
+				Expect(err).To(Succeed())
+				Expect(size).To(Equal(1))
+
+				Expect(db.DeleteRowByID(ctx, 1, &rowUser)).To(Succeed())
+				err = db.QueryRow(ctx, "select count(*) from users").Scan(&size)
+				Expect(err).To(Succeed())
+				Expect(size).To(Equal(0))
 
 				Expect(db.Close()).To(Succeed())
 			})

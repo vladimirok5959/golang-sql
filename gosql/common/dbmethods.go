@@ -42,6 +42,12 @@ func (d *DBMethods) Close() error {
 	return err
 }
 
+func (d *DBMethods) DeleteRowByID(ctx context.Context, id int64, row any) error {
+	query := deleteRowByIDString(row)
+	_, err := d.Exec(ctx, query, id)
+	return err
+}
+
 func (d *DBMethods) Each(ctx context.Context, query string, callback func(ctx context.Context, rows *Rows) error, args ...any) error {
 	if callback == nil {
 		return fmt.Errorf("callback is not set")
