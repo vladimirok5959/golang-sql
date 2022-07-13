@@ -31,7 +31,7 @@ sqlite:///data/database.sqlite
 sqlite3:///data/database.sqlite
 ```
 
-## Custom funcs
+### Custom funcs
 
 ```go
 DeleteRowByID(ctx context.Context, id int64, row any) error
