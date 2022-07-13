@@ -42,9 +42,14 @@ RowExists(ctx context.Context, id int64, row any) bool
 Please mark structure fields for using this funcs:
 
 ```go
-type User struct {
+type structUser struct {
     ID   int64  `field:"id" table:"users"`
     Name string `field:"name"`
+}
+
+var rowUser structUser
+if err := db.DeleteRowByID(context.Background(), 1, rowUser); err != nil {
+    fmt.Printf("%s\n", err.Error())
 }
 ```
 
