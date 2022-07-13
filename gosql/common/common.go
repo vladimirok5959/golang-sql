@@ -135,6 +135,20 @@ func rowExistsString(row any) string {
 	return `SELECT 1 FROM ` + table + ` WHERE id = $1 LIMIT 1`
 }
 
+func deleteRowByIDString(row any) string {
+	v := reflect.ValueOf(row).Elem()
+	t := v.Type()
+	var table string
+	for i := 0; i < t.NumField(); i++ {
+		if table == "" {
+			if tag := t.Field(i).Tag.Get("table"); tag != "" {
+				table = tag
+			}
+		}
+	}
+	return `DELETE FROM ` + table + ` WHERE id = $1 LIMIT 1`
+}
+
 func ParseUrl(dbURL string) (*url.URL, error) {
 	databaseURL, err := url.Parse(dbURL)
 	if err != nil {
