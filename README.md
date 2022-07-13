@@ -31,6 +31,23 @@ sqlite:///data/database.sqlite
 sqlite3:///data/database.sqlite
 ```
 
+## Custom funcs
+
+```go
+DeleteRowByID(ctx context.Context, id int64, row any) error
+QueryRowByID(ctx context.Context, id int64, row any) error
+RowExists(ctx context.Context, id int64, row any) bool
+```
+
+Please mark structure fields for using this funcs:
+
+```go
+type User struct {
+    ID   int64  `field:"id" table:"users"`
+    Name string `field:"name"`
+}
+```
+
 ## Examples
 
 ```sh
