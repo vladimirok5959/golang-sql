@@ -42,6 +42,10 @@ func (d *DBMethods) Close() error {
 	return err
 }
 
+func (d *DBMethods) CurrentUnixTimestamp() int64 {
+	return currentUnixTimestamp()
+}
+
 func (d *DBMethods) DeleteRowByID(ctx context.Context, id int64, row any) error {
 	query := deleteRowByIDString(row)
 	_, err := d.Exec(ctx, query, id)

@@ -22,6 +22,7 @@ import (
 type Engine interface {
 	Begin(ctx context.Context, opts *sql.TxOptions) (*Tx, error)
 	Close() error
+	CurrentUnixTimestamp() int64
 	DeleteRowByID(ctx context.Context, id int64, row any) error
 	Each(ctx context.Context, query string, logic func(ctx context.Context, rows *Rows) error, args ...any) error
 	Exec(ctx context.Context, query string, args ...any) (sql.Result, error)
@@ -148,6 +149,10 @@ func deleteRowByIDString(row any) string {
 		}
 	}
 	return `DELETE FROM ` + table + ` WHERE id = $1`
+}
+
+func currentUnixTimestamp() int64 {
+	return time.Now().UTC().Unix()
 }
 
 func ParseUrl(dbURL string) (*url.URL, error) {

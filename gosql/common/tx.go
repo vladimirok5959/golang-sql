@@ -35,6 +35,10 @@ func (t *Tx) Commit() error {
 	return err
 }
 
+func (t *Tx) CurrentUnixTimestamp() int64 {
+	return currentUnixTimestamp()
+}
+
 func (t *Tx) DeleteRowByID(ctx context.Context, id int64, row any) error {
 	query := deleteRowByIDString(row)
 	_, err := t.Exec(ctx, query, id)
