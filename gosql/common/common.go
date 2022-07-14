@@ -42,6 +42,24 @@ var rSqlParam = regexp.MustCompile(`\$\d+`)
 var rLogSpacesAll = regexp.MustCompile(`[\s\t]+`)
 var rLogSpacesEnd = regexp.MustCompile(`[\s\t]+;$`)
 
+func currentUnixTimestamp() int64 {
+	return time.Now().UTC().Unix()
+}
+
+func deleteRowByIDString(row any) string {
+	v := reflect.ValueOf(row).Elem()
+	t := v.Type()
+	var table string
+	for i := 0; i < t.NumField(); i++ {
+		if table == "" {
+			if tag := t.Field(i).Tag.Get("table"); tag != "" {
+				table = tag
+			}
+		}
+	}
+	return `DELETE FROM ` + table + ` WHERE id = $1`
+}
+
 func fixQuery(query string) string {
 	return rSqlParam.ReplaceAllString(query, "?")
 }
@@ -96,15 +114,6 @@ func log(w io.Writer, fname string, start time.Time, err error, tx bool, query s
 	return res
 }
 
-func scans(row any) []any {
-	v := reflect.ValueOf(row).Elem()
-	res := make([]interface{}, v.NumField())
-	for i := 0; i < v.NumField(); i++ {
-		res[i] = v.Field(i).Addr().Interface()
-	}
-	return res
-}
-
 func queryRowByIDString(row any) string {
 	v := reflect.ValueOf(row).Elem()
 	t := v.Type()
@@ -137,22 +146,13 @@ func rowExistsString(row any) string {
 	return `SELECT 1 FROM ` + table + ` WHERE id = $1 LIMIT 1`
 }
 
-func deleteRowByIDString(row any) string {
+func scans(row any) []any {
 	v := reflect.ValueOf(row).Elem()
-	t := v.Type()
-	var table string
-	for i := 0; i < t.NumField(); i++ {
-		if table == "" {
-			if tag := t.Field(i).Tag.Get("table"); tag != "" {
-				table = tag
-			}
-		}
+	res := make([]interface{}, v.NumField())
+	for i := 0; i < v.NumField(); i++ {
+		res[i] = v.Field(i).Addr().Interface()
 	}
-	return `DELETE FROM ` + table + ` WHERE id = $1`
-}
-
-func currentUnixTimestamp() int64 {
-	return time.Now().UTC().Unix()
+	return res
 }
 
 func ParseUrl(dbURL string) (*url.URL, error) {
