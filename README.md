@@ -48,7 +48,7 @@ type structUser struct {
 }
 
 var rowUser structUser
-if err := db.DeleteRowByID(context.Background(), 1, rowUser); err != nil {
+if err := db.DeleteRowByID(context.Background(), 1, &rowUser); err != nil {
     fmt.Printf("%s\n", err.Error())
 }
 ```
