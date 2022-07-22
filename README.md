@@ -35,6 +35,7 @@ sqlite3:///data/database.sqlite
 
 ```go
 DeleteRowByID(ctx context.Context, id int64, row any) error
+InsertRow(ctx context.Context, row any) error
 PrepareSQL(query string, args ...any) *common.Prepared
 QueryRowByID(ctx context.Context, id int64, row any) error
 RowExists(ctx context.Context, id int64, row any) bool
