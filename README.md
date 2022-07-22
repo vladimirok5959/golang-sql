@@ -53,6 +53,11 @@ var rowUser structUser
 if err := db.DeleteRowByID(context.Background(), 1, &rowUser); err != nil {
     fmt.Printf("%s\n", err.Error())
 }
+
+rowUser.Name = "John"
+if err := db.InsertRow(context.Background(), &rowUser); err != nil {
+    fmt.Printf("%s\n", err.Error())
+}
 ```
 
 ## Examples
