@@ -78,6 +78,7 @@ func insertRowString(row any) (string, []any) {
 	values := []string{}
 	args := []any{}
 	position := 1
+	created_at := currentUnixTimestamp()
 	for i := 0; i < t.NumField(); i++ {
 		if table == "" {
 			if tag := t.Field(i).Tag.Get("table"); tag != "" {
@@ -87,13 +88,17 @@ func insertRowString(row any) (string, []any) {
 		if tag := t.Field(i).Tag.Get("field"); tag != "" && tag != "id" {
 			fields = append(fields, tag)
 			values = append(values, "$"+strconv.Itoa(position))
-			switch t.Field(i).Type.Kind() {
-			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-				args = append(args, v.Field(i).Int())
-			case reflect.Float32, reflect.Float64:
-				args = append(args, v.Field(i).Float())
-			case reflect.String:
-				args = append(args, v.Field(i).String())
+			if tag == "created_at" || tag == "updated_at" {
+				args = append(args, created_at)
+			} else {
+				switch t.Field(i).Type.Kind() {
+				case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+					args = append(args, v.Field(i).Int())
+				case reflect.Float32, reflect.Float64:
+					args = append(args, v.Field(i).Float())
+				case reflect.String:
+					args = append(args, v.Field(i).String())
+				}
 			}
 			position++
 		}

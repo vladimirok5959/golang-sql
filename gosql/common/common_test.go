@@ -61,6 +61,26 @@ var _ = Describe("common", func() {
 			Expect(args[1]).To(Equal("Value"))
 			Expect(args[2]).To(Equal(int64(59)))
 		})
+
+		It("convert struct to SQL query and populate created_at and updated_at", func() {
+			var row struct {
+				ID        int64  `field:"id" table:"users"`
+				CreatedAt int64  `field:"created_at"`
+				UpdatedAt int64  `field:"updated_at"`
+				Name      string `field:"name"`
+			}
+
+			row.Name = "Name"
+
+			sql, args := common.InsertRowString(&row)
+
+			Expect(sql).To(Equal(`INSERT INTO users (created_at, updated_at, name) VALUES ($1, $2, $3)`))
+
+			Expect(len(args)).To(Equal(3))
+			Expect(args[0].(int64) > 0).To(BeTrue())
+			Expect(args[1].(int64) > 0).To(BeTrue())
+			Expect(args[2]).To(Equal("Name"))
+		})
 	})
 
 	Context("log", func() {
