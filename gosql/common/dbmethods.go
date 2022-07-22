@@ -94,7 +94,7 @@ func (d *DBMethods) ExecPrepared(ctx context.Context, prep *Prepared) (sql.Resul
 
 func (d *DBMethods) InsertRow(ctx context.Context, row any) error {
 	query, args := insertRowString(row)
-	_, err := d.Exec(ctx, query, args)
+	_, err := d.Exec(ctx, query, args...)
 	return err
 }
 

@@ -88,7 +88,7 @@ func (t *Tx) ExecPrepared(ctx context.Context, prep *Prepared) (sql.Result, erro
 
 func (t *Tx) InsertRow(ctx context.Context, row any) error {
 	query, args := insertRowString(row)
-	_, err := t.Exec(ctx, query, args)
+	_, err := t.Exec(ctx, query, args...)
 	return err
 }
 
