@@ -86,6 +86,12 @@ func (t *Tx) ExecPrepared(ctx context.Context, prep *Prepared) (sql.Result, erro
 	return t.Exec(ctx, prep.Query, prep.Args...)
 }
 
+func (t *Tx) InsertRow(ctx context.Context, row any) error {
+	query, args := insertRowString(row)
+	_, err := t.Exec(ctx, query, args)
+	return err
+}
+
 func (t *Tx) Query(ctx context.Context, query string, args ...any) (*Rows, error) {
 	start := time.Now()
 	rows, err := t.tx.QueryContext(ctx, t.fixQuery(query), args...)

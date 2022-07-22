@@ -9,6 +9,7 @@ import (
 	"os"
 	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -28,6 +29,7 @@ type Engine interface {
 	EachPrepared(ctx context.Context, prep *Prepared, logic func(ctx context.Context, rows *Rows) error) error
 	Exec(ctx context.Context, query string, args ...any) (sql.Result, error)
 	ExecPrepared(ctx context.Context, prep *Prepared) (sql.Result, error)
+	InsertRow(ctx context.Context, row any) error
 	Ping(context.Context) error
 	Prepare(ctx context.Context, query string) (*sql.Stmt, error)
 	Query(ctx context.Context, query string, args ...any) (*Rows, error)
@@ -66,6 +68,37 @@ func deleteRowByIDString(row any) string {
 
 func fixQuery(query string) string {
 	return rSqlParam.ReplaceAllString(query, "?")
+}
+
+func insertRowString(row any) (string, []any) {
+	v := reflect.ValueOf(row).Elem()
+	t := v.Type()
+	var table string
+	fields := []string{}
+	values := []string{}
+	args := []any{}
+	position := 1
+	for i := 0; i < t.NumField(); i++ {
+		if table == "" {
+			if tag := t.Field(i).Tag.Get("table"); tag != "" {
+				table = tag
+			}
+		}
+		if tag := t.Field(i).Tag.Get("field"); tag != "" && tag != "id" {
+			fields = append(fields, tag)
+			values = append(values, "$"+strconv.Itoa(position))
+			switch t.Field(i).Type.Kind() {
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				args = append(args, v.Field(i).Int())
+			case reflect.Float32, reflect.Float64:
+				args = append(args, v.Field(i).Float())
+			case reflect.String:
+				args = append(args, v.Field(i).String())
+			}
+			position++
+		}
+	}
+	return `INSERT INTO ` + table + ` (` + strings.Join(fields, ", ") + `) VALUES (` + strings.Join(values, ", ") + `)`, args
 }
 
 func log(w io.Writer, fname string, start time.Time, err error, tx bool, query string, args ...any) string {

@@ -92,6 +92,12 @@ func (d *DBMethods) ExecPrepared(ctx context.Context, prep *Prepared) (sql.Resul
 	return d.Exec(ctx, prep.Query, prep.Query)
 }
 
+func (d *DBMethods) InsertRow(ctx context.Context, row any) error {
+	query, args := insertRowString(row)
+	_, err := d.Exec(ctx, query, args)
+	return err
+}
+
 func (d *DBMethods) Ping(ctx context.Context) error {
 	start := time.Now()
 	err := d.DB.PingContext(ctx)

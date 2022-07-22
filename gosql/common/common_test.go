@@ -27,6 +27,30 @@ var _ = Describe("common", func() {
 		})
 	})
 
+	Context("insertRow", func() {
+		It("convert struct to SQL query", func() {
+			var row struct {
+				ID       int64  `field:"id" table:"users"`
+				Name     string `field:"name"`
+				Value    string `field:"value"`
+				Position int64  `field:"position"`
+			}
+
+			row.Name = "Name"
+			row.Value = "Value"
+			row.Position = 59
+
+			sql, args := common.InsertRowString(&row)
+
+			Expect(sql).To(Equal(`INSERT INTO users (name, value, position) VALUES ($1, $2, $3)`))
+
+			Expect(len(args)).To(Equal(3))
+			Expect(args[0]).To(Equal("Name"))
+			Expect(args[1]).To(Equal("Value"))
+			Expect(args[2]).To(Equal(int64(59)))
+		})
+	})
+
 	Context("log", func() {
 		Context("time", func() {
 			It("calculate one second", func() {
