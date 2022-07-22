@@ -25,12 +25,16 @@ type Engine interface {
 	CurrentUnixTimestamp() int64
 	DeleteRowByID(ctx context.Context, id int64, row any) error
 	Each(ctx context.Context, query string, logic func(ctx context.Context, rows *Rows) error, args ...any) error
+	EachPrepared(ctx context.Context, prep *Prepared, logic func(ctx context.Context, rows *Rows) error) error
 	Exec(ctx context.Context, query string, args ...any) (sql.Result, error)
+	ExecPrepared(ctx context.Context, prep *Prepared) (sql.Result, error)
 	Ping(context.Context) error
 	Prepare(ctx context.Context, query string) (*sql.Stmt, error)
 	Query(ctx context.Context, query string, args ...any) (*Rows, error)
+	QueryPrepared(ctx context.Context, prep *Prepared) (*Rows, error)
 	QueryRow(ctx context.Context, query string, args ...any) *Row
 	QueryRowByID(ctx context.Context, id int64, row any) error
+	QueryRowPrepared(ctx context.Context, prep *Prepared) *Row
 	RowExists(ctx context.Context, id int64, row any) bool
 	SetConnMaxLifetime(d time.Duration)
 	SetMaxIdleConns(n int)
@@ -204,4 +208,8 @@ func OpenDB(databaseURL *url.URL, migrationsDir string, skipMigration bool, debu
 	}
 
 	return db, nil
+}
+
+func PrepareSQL(query string, args ...any) *Prepared {
+	return &Prepared{query, args}
 }

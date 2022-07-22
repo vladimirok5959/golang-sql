@@ -52,11 +52,19 @@ func (t *Tx) Exec(ctx context.Context, query string, args ...any) (sql.Result, e
 	return res, err
 }
 
+func (t *Tx) ExecPrepared(ctx context.Context, prep *Prepared) (sql.Result, error) {
+	return t.Exec(ctx, prep.Query, prep.Args...)
+}
+
 func (t *Tx) Query(ctx context.Context, query string, args ...any) (*Rows, error) {
 	start := time.Now()
 	rows, err := t.tx.QueryContext(ctx, t.fixQuery(query), args...)
 	t.log("Query", start, err, true, t.fixQuery(query), args...)
 	return &Rows{Rows: rows}, err
+}
+
+func (t *Tx) QueryPrepared(ctx context.Context, prep *Prepared) (*Rows, error) {
+	return t.Query(ctx, prep.Query, prep.Args...)
 }
 
 func (t *Tx) QueryRow(ctx context.Context, query string, args ...any) *Row {
@@ -69,6 +77,10 @@ func (t *Tx) QueryRow(ctx context.Context, query string, args ...any) *Row {
 func (t *Tx) QueryRowByID(ctx context.Context, id int64, row any) error {
 	query := queryRowByIDString(row)
 	return t.QueryRow(ctx, query, id).Scans(row)
+}
+
+func (t *Tx) QueryRowPrepared(ctx context.Context, prep *Prepared) *Row {
+	return t.QueryRow(ctx, prep.Query, prep.Args...)
 }
 
 func (t *Tx) RowExists(ctx context.Context, id int64, row any) bool {

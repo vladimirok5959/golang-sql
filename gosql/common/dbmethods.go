@@ -77,11 +77,19 @@ func (d *DBMethods) Each(ctx context.Context, query string, callback func(ctx co
 	return nil
 }
 
+func (d *DBMethods) EachPrepared(ctx context.Context, prep *Prepared, callback func(ctx context.Context, rows *Rows) error) error {
+	return d.Each(ctx, prep.Query, callback, prep.Args...)
+}
+
 func (d *DBMethods) Exec(ctx context.Context, query string, args ...any) (sql.Result, error) {
 	start := time.Now()
 	res, err := d.DB.ExecContext(ctx, d.fixQuery(query), args...)
 	d.log("Exec", start, err, false, d.fixQuery(query), args...)
 	return res, err
+}
+
+func (d *DBMethods) ExecPrepared(ctx context.Context, prep *Prepared) (sql.Result, error) {
+	return d.Exec(ctx, prep.Query, prep.Query)
 }
 
 func (d *DBMethods) Ping(ctx context.Context) error {
@@ -105,6 +113,10 @@ func (d *DBMethods) Query(ctx context.Context, query string, args ...any) (*Rows
 	return &Rows{Rows: rows}, err
 }
 
+func (d *DBMethods) QueryPrepared(ctx context.Context, prep *Prepared) (*Rows, error) {
+	return d.Query(ctx, prep.Query, prep.Args...)
+}
+
 func (d *DBMethods) QueryRow(ctx context.Context, query string, args ...any) *Row {
 	start := time.Now()
 	row := d.DB.QueryRowContext(ctx, d.fixQuery(query), args...)
@@ -115,6 +127,10 @@ func (d *DBMethods) QueryRow(ctx context.Context, query string, args ...any) *Ro
 func (d *DBMethods) QueryRowByID(ctx context.Context, id int64, row any) error {
 	query := queryRowByIDString(row)
 	return d.QueryRow(ctx, query, id).Scans(row)
+}
+
+func (d *DBMethods) QueryRowPrepared(ctx context.Context, prep *Prepared) *Row {
+	return d.QueryRow(ctx, prep.Query, prep.Args...)
 }
 
 func (d *DBMethods) RowExists(ctx context.Context, id int64, row any) bool {
