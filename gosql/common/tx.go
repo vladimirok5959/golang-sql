@@ -3,6 +3,7 @@ package common
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"os"
 
 	"time"
@@ -43,6 +44,35 @@ func (t *Tx) DeleteRowByID(ctx context.Context, id int64, row any) error {
 	query := deleteRowByIDString(row)
 	_, err := t.Exec(ctx, query, id)
 	return err
+}
+
+func (t *Tx) Each(ctx context.Context, query string, callback func(ctx context.Context, rows *Rows) error, args ...any) error {
+	if callback == nil {
+		return fmt.Errorf("callback is not set")
+	}
+	rows, err := t.Query(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+			if err := callback(ctx, rows); err != nil {
+				return err
+			}
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t *Tx) EachPrepared(ctx context.Context, prep *Prepared, callback func(ctx context.Context, rows *Rows) error) error {
+	return t.Each(ctx, prep.Query, callback, prep.Args...)
 }
 
 func (t *Tx) Exec(ctx context.Context, query string, args ...any) (sql.Result, error) {
