@@ -119,6 +119,52 @@ var _ = Describe("gosql", func() {
 
 		// 		Expect(db.Close()).To(Succeed())
 		// 	})
+
+		// 	It("open connection, migrate and insert row", func() {
+		// 		db, err := gosql.Open("mysql://root:root@127.0.0.1:3306/gosql", migrationsDir, false, false)
+		// 		Expect(err).To(Succeed())
+
+		// 		var rowUser struct {
+		// 			ID   int64  `field:"id" table:"users"`
+		// 			Name string `field:"name"`
+		// 		}
+
+		// 		var size int
+		// 		err = db.QueryRow(ctx, "select count(*) from users").Scan(&size)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(size).To(Equal(2))
+
+		// 		rowUser.Name = "James"
+		// 		Expect(db.InsertRow(ctx, &rowUser)).To(Succeed())
+
+		// 		err = db.QueryRow(ctx, "select count(*) from users").Scan(&size)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(size).To(Equal(3))
+
+		// 		rowUser.Name = "Robert"
+		// 		Expect(db.InsertRow(ctx, &rowUser)).To(Succeed())
+
+		// 		err = db.QueryRow(ctx, "select count(*) from users").Scan(&size)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(size).To(Equal(4))
+
+		// 		names := []string{}
+		// 		err = db.Each(
+		// 			ctx,
+		// 			"SELECT 0, name FROM users ORDER BY name ASC",
+		// 			func(ctx context.Context, rows *gosql.Rows) error {
+		// 				if err := rows.Scans(&rowUser); err != nil {
+		// 					return err
+		// 				}
+		// 				names = append(names, rowUser.Name)
+		// 				return nil
+		// 			},
+		// 		)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(names).To(Equal([]string{"Alice", "Bob", "James", "Robert"}))
+
+		// 		Expect(db.Close()).To(Succeed())
+		// 	})
 		// })
 
 		// // Note: you need to up PostgreSQL server for this test case
@@ -195,6 +241,52 @@ var _ = Describe("gosql", func() {
 		// 		err = db.QueryRow(ctx, "select count(*) from users").Scan(&size)
 		// 		Expect(err).To(Succeed())
 		// 		Expect(size).To(Equal(0))
+
+		// 		Expect(db.Close()).To(Succeed())
+		// 	})
+
+		// 	It("open connection, migrate and insert row", func() {
+		// 		db, err := gosql.Open("postgres://root:root@127.0.0.1:5432/gosql?sslmode=disable", migrationsDir, false, false)
+		// 		Expect(err).To(Succeed())
+
+		// 		var rowUser struct {
+		// 			ID   int64  `field:"id" table:"users"`
+		// 			Name string `field:"name"`
+		// 		}
+
+		// 		var size int
+		// 		err = db.QueryRow(ctx, "select count(*) from users").Scan(&size)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(size).To(Equal(2))
+
+		// 		rowUser.Name = "James"
+		// 		Expect(db.InsertRow(ctx, &rowUser)).To(Succeed())
+
+		// 		err = db.QueryRow(ctx, "select count(*) from users").Scan(&size)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(size).To(Equal(3))
+
+		// 		rowUser.Name = "Robert"
+		// 		Expect(db.InsertRow(ctx, &rowUser)).To(Succeed())
+
+		// 		err = db.QueryRow(ctx, "select count(*) from users").Scan(&size)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(size).To(Equal(4))
+
+		// 		names := []string{}
+		// 		err = db.Each(
+		// 			ctx,
+		// 			"SELECT 0, name FROM users ORDER BY name ASC",
+		// 			func(ctx context.Context, rows *gosql.Rows) error {
+		// 				if err := rows.Scans(&rowUser); err != nil {
+		// 					return err
+		// 				}
+		// 				names = append(names, rowUser.Name)
+		// 				return nil
+		// 			},
+		// 		)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(names).To(Equal([]string{"Alice", "Bob", "James", "Robert"}))
 
 		// 		Expect(db.Close()).To(Succeed())
 		// 	})
