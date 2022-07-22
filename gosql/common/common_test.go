@@ -15,6 +15,18 @@ import (
 )
 
 var _ = Describe("common", func() {
+	Context("deleteRowByIDString", func() {
+		It("convert struct to SQL query", func() {
+			var row struct {
+				ID    int64  `field:"id" table:"users"`
+				Name  string `field:"name"`
+				Value string `field:"value"`
+			}
+
+			Expect(common.DeleteRowByIDString(&row)).To(Equal(`DELETE FROM users WHERE id = $1`))
+		})
+	})
+
 	Context("fixQuery", func() {
 		It("replace param for MySQL driver", func() {
 			sql := "select id, name from users where id=$1"
@@ -87,22 +99,6 @@ var _ = Describe("common", func() {
 		})
 	})
 
-	Context("scans", func() {
-		It("convert struct to array of pointers to this struct fields", func() {
-			var row struct {
-				ID    int64
-				Name  string
-				Value string
-			}
-
-			Expect(common.Scans(&row)).To(Equal([]any{
-				&row.ID,
-				&row.Name,
-				&row.Value,
-			}))
-		})
-	})
-
 	Context("queryRowByIDString", func() {
 		It("convert struct to SQL query", func() {
 			var row struct {
@@ -127,15 +123,19 @@ var _ = Describe("common", func() {
 		})
 	})
 
-	Context("deleteRowByIDString", func() {
-		It("convert struct to SQL query", func() {
+	Context("scans", func() {
+		It("convert struct to array of pointers to this struct fields", func() {
 			var row struct {
-				ID    int64  `field:"id" table:"users"`
-				Name  string `field:"name"`
-				Value string `field:"value"`
+				ID    int64
+				Name  string
+				Value string
 			}
 
-			Expect(common.DeleteRowByIDString(&row)).To(Equal(`DELETE FROM users WHERE id = $1`))
+			Expect(common.Scans(&row)).To(Equal([]any{
+				&row.ID,
+				&row.Name,
+				&row.Value,
+			}))
 		})
 	})
 
