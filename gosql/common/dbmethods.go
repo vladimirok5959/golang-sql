@@ -89,7 +89,7 @@ func (d *DBMethods) Exec(ctx context.Context, query string, args ...any) (sql.Re
 }
 
 func (d *DBMethods) ExecPrepared(ctx context.Context, prep *Prepared) (sql.Result, error) {
-	return d.Exec(ctx, prep.Query, prep.Query)
+	return d.Exec(ctx, prep.Query, prep.Args...)
 }
 
 func (d *DBMethods) InsertRow(ctx context.Context, row any) error {
