@@ -32,6 +32,7 @@ type Engine interface {
 	InsertRow(ctx context.Context, row any) error
 	Ping(context.Context) error
 	Prepare(ctx context.Context, query string) (*sql.Stmt, error)
+	PrepareSQL(query string, args ...any) *Prepared
 	Query(ctx context.Context, query string, args ...any) (*Rows, error)
 	QueryPrepared(ctx context.Context, prep *Prepared) (*Rows, error)
 	QueryRow(ctx context.Context, query string, args ...any) *Row
@@ -156,6 +157,10 @@ func log(w io.Writer, fname string, start time.Time, err error, tx bool, query s
 	return res
 }
 
+func prepareSQL(query string, args ...any) *Prepared {
+	return &Prepared{query, args}
+}
+
 func queryRowByIDString(row any) string {
 	v := reflect.ValueOf(row).Elem()
 	t := v.Type()
@@ -246,8 +251,4 @@ func OpenDB(databaseURL *url.URL, migrationsDir string, skipMigration bool, debu
 	}
 
 	return db, nil
-}
-
-func PrepareSQL(query string, args ...any) *Prepared {
-	return &Prepared{query, args}
 }

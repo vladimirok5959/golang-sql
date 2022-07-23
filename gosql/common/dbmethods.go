@@ -112,6 +112,10 @@ func (d *DBMethods) Prepare(ctx context.Context, query string) (*sql.Stmt, error
 	return stm, err
 }
 
+func (d *DBMethods) PrepareSQL(query string, args ...any) *Prepared {
+	return prepareSQL(query, args...)
+}
+
 func (d *DBMethods) Query(ctx context.Context, query string, args ...any) (*Rows, error) {
 	start := time.Now()
 	rows, err := d.DB.QueryContext(ctx, d.fixQuery(query), args...)

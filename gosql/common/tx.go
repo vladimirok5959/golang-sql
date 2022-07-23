@@ -92,6 +92,10 @@ func (t *Tx) InsertRow(ctx context.Context, row any) error {
 	return err
 }
 
+func (t *Tx) PrepareSQL(query string, args ...any) *Prepared {
+	return prepareSQL(query, args...)
+}
+
 func (t *Tx) Query(ctx context.Context, query string, args ...any) (*Rows, error) {
 	start := time.Now()
 	rows, err := t.tx.QueryContext(ctx, t.fixQuery(query), args...)
