@@ -72,6 +72,15 @@ func fixQuery(query string) string {
 	return rSqlParam.ReplaceAllString(query, "?")
 }
 
+func inArray(arr []string, str string) bool {
+	for _, s := range arr {
+		if s == str {
+			return true
+		}
+	}
+	return false
+}
+
 func insertRowString(row any) (string, []any) {
 	v := reflect.ValueOf(row).Elem()
 	t := v.Type()
@@ -207,7 +216,7 @@ func scans(row any) []any {
 	return res
 }
 
-func updateRowString(row any) (string, []any) {
+func updateRowString(row any, only ...string) (string, []any) {
 	v := reflect.ValueOf(row).Elem()
 	t := v.Type()
 	var id int64
@@ -228,7 +237,7 @@ func updateRowString(row any) (string, []any) {
 			if id == 0 && tag == "id" {
 				id = v.Field(i).Int()
 			}
-			if tag != "id" && tag != "created_at" {
+			if tag != "id" && tag != "created_at" && ((len(only) == 0) || (len(only) > 0 && inArray(only, tag))) {
 				fields = append(fields, tag)
 				values = append(values, "$"+strconv.Itoa(position))
 				if tag == "updated_at" {

@@ -39,7 +39,18 @@ var _ = Describe("common", func() {
 		})
 	})
 
-	Context("insertRow", func() {
+	Context("inArray", func() {
+		It("check string in array", func() {
+			arr := []string{"field1", "field2", "field3"}
+			Expect(common.InArray(arr, "field1")).To(BeTrue())
+			Expect(common.InArray(arr, "field2")).To(BeTrue())
+			Expect(common.InArray(arr, "field3")).To(BeTrue())
+			Expect(common.InArray(arr, "field4")).To(BeFalse())
+			Expect(common.InArray(arr, "field5")).To(BeFalse())
+		})
+	})
+
+	Context("insertRowString", func() {
 		It("convert struct to SQL query", func() {
 			var row struct {
 				ID       int64  `field:"id" table:"users"`
@@ -182,6 +193,32 @@ var _ = Describe("common", func() {
 			Expect(args[1]).To(Equal("Value"))
 			Expect(args[2]).To(Equal(int64(59)))
 			Expect(args[3]).To(Equal(int64(10)))
+
+			sql, args = common.UpdateRowString(&row, "name")
+
+			Expect(sql).To(Equal(`UPDATE users SET name = $1 WHERE id = $2`))
+
+			Expect(len(args)).To(Equal(2))
+			Expect(args[0]).To(Equal("Name"))
+			Expect(args[1]).To(Equal(int64(10)))
+
+			sql, args = common.UpdateRowString(&row, "name", "value")
+
+			Expect(sql).To(Equal(`UPDATE users SET name = $1, value = $2 WHERE id = $3`))
+
+			Expect(len(args)).To(Equal(3))
+			Expect(args[0]).To(Equal("Name"))
+			Expect(args[1]).To(Equal("Value"))
+			Expect(args[2]).To(Equal(int64(10)))
+
+			sql, args = common.UpdateRowString(&row, "name", "position")
+
+			Expect(sql).To(Equal(`UPDATE users SET name = $1, position = $2 WHERE id = $3`))
+
+			Expect(len(args)).To(Equal(3))
+			Expect(args[0]).To(Equal("Name"))
+			Expect(args[1]).To(Equal(int64(59)))
+			Expect(args[2]).To(Equal(int64(10)))
 		})
 
 		It("convert struct to SQL query and populate updated_at", func() {
