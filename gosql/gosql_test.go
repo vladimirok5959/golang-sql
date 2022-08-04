@@ -165,6 +165,30 @@ var _ = Describe("gosql", func() {
 
 		// 		Expect(db.Close()).To(Succeed())
 		// 	})
+
+		// 	It("open connection, migrate and update row", func() {
+		// 		db, err := gosql.Open("mysql://root:root@127.0.0.1:3306/gosql", migrationsDir, false, false)
+		// 		Expect(err).To(Succeed())
+
+		// 		var rowUser struct {
+		// 			ID   int64  `field:"id" table:"users"`
+		// 			Name string `field:"name"`
+		// 		}
+
+		// 		_, err = db.Exec(ctx, "INSERT INTO users (id, name) VALUES ('3', 'Patrik')")
+		// 		Expect(err).To(Succeed())
+
+		// 		rowUser.ID = 3
+		// 		rowUser.Name = "Robert"
+		// 		Expect(db.UpdateRow(ctx, &rowUser)).To(Succeed())
+
+		// 		err = db.QueryRowByID(ctx, 3, &rowUser)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(rowUser.ID).To(Equal(int64(3)))
+		// 		Expect(rowUser.Name).To(Equal("Robert"))
+
+		// 		Expect(db.Close()).To(Succeed())
+		// 	})
 		// })
 
 		// // Note: you need to up PostgreSQL server for this test case
@@ -287,6 +311,30 @@ var _ = Describe("gosql", func() {
 		// 		)
 		// 		Expect(err).To(Succeed())
 		// 		Expect(names).To(Equal([]string{"Alice", "Bob", "James", "Robert"}))
+
+		// 		Expect(db.Close()).To(Succeed())
+		// 	})
+
+		// 	It("open connection, migrate and update row", func() {
+		// 		db, err := gosql.Open("postgres://root:root@127.0.0.1:5432/gosql?sslmode=disable", migrationsDir, false, false)
+		// 		Expect(err).To(Succeed())
+
+		// 		var rowUser struct {
+		// 			ID   int64  `field:"id" table:"users"`
+		// 			Name string `field:"name"`
+		// 		}
+
+		// 		_, err = db.Exec(ctx, "INSERT INTO users (id, name) VALUES ('3', 'Patrik')")
+		// 		Expect(err).To(Succeed())
+
+		// 		rowUser.ID = 3
+		// 		rowUser.Name = "Robert"
+		// 		Expect(db.UpdateRow(ctx, &rowUser)).To(Succeed())
+
+		// 		err = db.QueryRowByID(ctx, 3, &rowUser)
+		// 		Expect(err).To(Succeed())
+		// 		Expect(rowUser.ID).To(Equal(int64(3)))
+		// 		Expect(rowUser.Name).To(Equal("Robert"))
 
 		// 		Expect(db.Close()).To(Succeed())
 		// 	})
@@ -431,6 +479,34 @@ var _ = Describe("gosql", func() {
 				)
 				Expect(err).To(Succeed())
 				Expect(names).To(Equal([]string{"Alice", "Bob", "James", "Robert"}))
+
+				Expect(db.Close()).To(Succeed())
+			})
+
+			It("open connection, migrate and update row", func() {
+				f, err := ioutil.TempFile("", "go-sqlite-test-")
+				Expect(err).To(Succeed())
+				f.Close()
+
+				db, err := gosql.Open("sqlite://"+f.Name(), migrationsDir, false, false)
+				Expect(err).To(Succeed())
+
+				var rowUser struct {
+					ID   int64  `field:"id" table:"users"`
+					Name string `field:"name"`
+				}
+
+				_, err = db.Exec(ctx, "INSERT INTO users (id, name) VALUES ('3', 'Patrik')")
+				Expect(err).To(Succeed())
+
+				rowUser.ID = 3
+				rowUser.Name = "Robert"
+				Expect(db.UpdateRow(ctx, &rowUser)).To(Succeed())
+
+				err = db.QueryRowByID(ctx, 3, &rowUser)
+				Expect(err).To(Succeed())
+				Expect(rowUser.ID).To(Equal(int64(3)))
+				Expect(rowUser.Name).To(Equal("Robert"))
 
 				Expect(db.Close()).To(Succeed())
 			})
