@@ -43,6 +43,7 @@ type Engine interface {
 	SetMaxIdleConns(n int)
 	SetMaxOpenConns(n int)
 	Transaction(ctx context.Context, queries func(ctx context.Context, tx *Tx) error) error
+	UpdateRow(ctx context.Context, row any) error
 }
 
 var rSqlParam = regexp.MustCompile(`\$\d+`)
@@ -200,6 +201,61 @@ func scans(row any) []any {
 		res[i] = v.Field(i).Addr().Interface()
 	}
 	return res
+}
+
+func updateRowString(row any) (string, []any) {
+	v := reflect.ValueOf(row).Elem()
+	t := v.Type()
+	var id int64
+	var table string
+	fields := []string{}
+	values := []string{}
+	args := []any{}
+	position := 1
+	updated_at := currentUnixTimestamp()
+	for i := 0; i < t.NumField(); i++ {
+		if table == "" {
+			if tag := t.Field(i).Tag.Get("table"); tag != "" {
+				table = tag
+			}
+		}
+		tag := t.Field(i).Tag.Get("field")
+		if tag != "" {
+			if id == 0 && tag == "id" {
+				id = v.Field(i).Int()
+			}
+			if tag != "id" && tag != "created_at" {
+				fields = append(fields, tag)
+				values = append(values, "$"+strconv.Itoa(position))
+				if tag == "updated_at" {
+					args = append(args, updated_at)
+				} else {
+					switch t.Field(i).Type.Kind() {
+					case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+						args = append(args, v.Field(i).Int())
+					case reflect.Float32, reflect.Float64:
+						args = append(args, v.Field(i).Float())
+					case reflect.String:
+						args = append(args, v.Field(i).String())
+					}
+				}
+				position++
+			}
+		}
+	}
+	sql := ""
+	args = append(args, id)
+	sql += "UPDATE " + table + " SET "
+	for i, v := range fields {
+		sql += v + " = " + values[i]
+		if i < len(fields)-1 {
+			sql += ", "
+		} else {
+			sql += " "
+		}
+	}
+	sql += "WHERE id = " + "$" + strconv.Itoa(position)
+	return sql, args
 }
 
 func ParseUrl(dbURL string) (*url.URL, error) {

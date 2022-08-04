@@ -7,3 +7,4 @@ var Log = log
 var QueryRowByIDString = queryRowByIDString
 var RowExistsString = rowExistsString
 var Scans = scans
+var UpdateRowString = updateRowString

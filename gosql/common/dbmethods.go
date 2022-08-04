@@ -191,3 +191,9 @@ func (d *DBMethods) Transaction(ctx context.Context, callback func(ctx context.C
 	}
 	return tx.Commit()
 }
+
+func (d *DBMethods) UpdateRow(ctx context.Context, row any) error {
+	query, args := updateRowString(row)
+	_, err := d.Exec(ctx, query, args...)
+	return err
+}

@@ -159,6 +159,53 @@ var _ = Describe("common", func() {
 		})
 	})
 
+	Context("updateRowString", func() {
+		It("convert struct to SQL query", func() {
+			var row struct {
+				ID       int64  `field:"id" table:"users"`
+				Name     string `field:"name"`
+				Value    string `field:"value"`
+				Position int64  `field:"position"`
+			}
+
+			row.ID = 10
+			row.Name = "Name"
+			row.Value = "Value"
+			row.Position = 59
+
+			sql, args := common.UpdateRowString(&row)
+
+			Expect(sql).To(Equal(`UPDATE users SET name = $1, value = $2, position = $3 WHERE id = $4`))
+
+			Expect(len(args)).To(Equal(4))
+			Expect(args[0]).To(Equal("Name"))
+			Expect(args[1]).To(Equal("Value"))
+			Expect(args[2]).To(Equal(int64(59)))
+			Expect(args[3]).To(Equal(int64(10)))
+		})
+
+		It("convert struct to SQL query and populate updated_at", func() {
+			var row struct {
+				ID        int64  `field:"id" table:"users"`
+				CreatedAt int64  `field:"created_at"`
+				UpdatedAt int64  `field:"updated_at"`
+				Name      string `field:"name"`
+			}
+
+			row.ID = 10
+			row.Name = "Name"
+
+			sql, args := common.UpdateRowString(&row)
+
+			Expect(sql).To(Equal(`UPDATE users SET updated_at = $1, name = $2 WHERE id = $3`))
+
+			Expect(len(args)).To(Equal(3))
+			Expect(args[0].(int64) > 0).To(BeTrue())
+			Expect(args[1]).To(Equal("Name"))
+			Expect(args[2]).To(Equal(int64(10)))
+		})
+	})
+
 	Context("ParseUrl", func() {
 		Context("Success", func() {
 			It("for MySQL", func() {

@@ -137,3 +137,9 @@ func (t *Tx) Rollback() error {
 	t.log("Rollback", t.start, err, true, "")
 	return err
 }
+
+func (t *Tx) UpdateRow(ctx context.Context, row any) error {
+	query, args := updateRowString(row)
+	_, err := t.Exec(ctx, query, args...)
+	return err
+}
