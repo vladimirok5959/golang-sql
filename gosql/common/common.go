@@ -87,22 +87,25 @@ func insertRowString(row any) (string, []any) {
 				table = tag
 			}
 		}
-		if tag := t.Field(i).Tag.Get("field"); tag != "" && tag != "id" {
-			fields = append(fields, tag)
-			values = append(values, "$"+strconv.Itoa(position))
-			if tag == "created_at" || tag == "updated_at" {
-				args = append(args, created_at)
-			} else {
-				switch t.Field(i).Type.Kind() {
-				case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-					args = append(args, v.Field(i).Int())
-				case reflect.Float32, reflect.Float64:
-					args = append(args, v.Field(i).Float())
-				case reflect.String:
-					args = append(args, v.Field(i).String())
+		tag := t.Field(i).Tag.Get("field")
+		if tag != "" {
+			if tag != "id" {
+				fields = append(fields, tag)
+				values = append(values, "$"+strconv.Itoa(position))
+				if tag == "created_at" || tag == "updated_at" {
+					args = append(args, created_at)
+				} else {
+					switch t.Field(i).Type.Kind() {
+					case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+						args = append(args, v.Field(i).Int())
+					case reflect.Float32, reflect.Float64:
+						args = append(args, v.Field(i).Float())
+					case reflect.String:
+						args = append(args, v.Field(i).String())
+					}
 				}
+				position++
 			}
-			position++
 		}
 	}
 	return `INSERT INTO ` + table + ` (` + strings.Join(fields, ", ") + `) VALUES (` + strings.Join(values, ", ") + `)`, args
@@ -173,7 +176,8 @@ func queryRowByIDString(row any) string {
 				table = tag
 			}
 		}
-		if tag := t.Field(i).Tag.Get("field"); tag != "" {
+		tag := t.Field(i).Tag.Get("field")
+		if tag != "" {
 			fields = append(fields, tag)
 		}
 	}
