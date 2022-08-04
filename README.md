@@ -39,6 +39,8 @@ InsertRow(ctx context.Context, row any) error
 PrepareSQL(query string, args ...any) *common.Prepared
 QueryRowByID(ctx context.Context, id int64, row any) error
 RowExists(ctx context.Context, id int64, row any) bool
+UpdateRow(ctx context.Context, row any) error
+UpdateRowOnly(ctx context.Context, row any, only ...string) error
 ```
 
 Please mark structure fields for using this funcs:
@@ -56,6 +58,16 @@ if err := db.DeleteRowByID(context.Background(), 1, &rowUser); err != nil {
 
 rowUser.Name = "John"
 if err := db.InsertRow(context.Background(), &rowUser); err != nil {
+    fmt.Printf("%s\n", err.Error())
+}
+
+rowUser.ID = 1
+rowUser.Name = "Alice"
+if err := db.UpdateRow(context.Background(), &rowUser); err != nil {
+    fmt.Printf("%s\n", err.Error())
+}
+
+if err := db.UpdateRowOnly(context.Background(), &rowUser, "name"); err != nil {
     fmt.Printf("%s\n", err.Error())
 }
 ```
