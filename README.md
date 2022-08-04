@@ -40,7 +40,7 @@ PrepareSQL(query string, args ...any) *common.Prepared
 QueryRowByID(ctx context.Context, id int64, row any) error
 RowExists(ctx context.Context, id int64, row any) bool
 UpdateRow(ctx context.Context, row any) error
-UpdateRowOnly(ctx context.Context, row any, only ...string) error
+UpdateRowOnly(ctx context.Context, row any, fields ...string) error
 ```
 
 Please mark structure fields for using this funcs:

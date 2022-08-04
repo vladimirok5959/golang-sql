@@ -144,8 +144,8 @@ func (t *Tx) UpdateRow(ctx context.Context, row any) error {
 	return err
 }
 
-func (t *Tx) UpdateRowOnly(ctx context.Context, row any, only ...string) error {
-	query, args := updateRowString(row, only...)
+func (t *Tx) UpdateRowOnly(ctx context.Context, row any, fields ...string) error {
+	query, args := updateRowString(row, fields...)
 	_, err := t.Exec(ctx, query, args...)
 	return err
 }
