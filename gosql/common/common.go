@@ -44,6 +44,7 @@ type Engine interface {
 	SetMaxOpenConns(n int)
 	Transaction(ctx context.Context, queries func(ctx context.Context, tx *Tx) error) error
 	UpdateRow(ctx context.Context, row any) error
+	UpdateRowOnly(ctx context.Context, row any, only ...string) error
 }
 
 var rSqlParam = regexp.MustCompile(`\$\d+`)

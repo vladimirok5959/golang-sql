@@ -143,3 +143,9 @@ func (t *Tx) UpdateRow(ctx context.Context, row any) error {
 	_, err := t.Exec(ctx, query, args...)
 	return err
 }
+
+func (t *Tx) UpdateRowOnly(ctx context.Context, row any, only ...string) error {
+	query, args := updateRowString(row, only...)
+	_, err := t.Exec(ctx, query, args...)
+	return err
+}

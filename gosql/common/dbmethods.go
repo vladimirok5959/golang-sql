@@ -197,3 +197,9 @@ func (d *DBMethods) UpdateRow(ctx context.Context, row any) error {
 	_, err := d.Exec(ctx, query, args...)
 	return err
 }
+
+func (d *DBMethods) UpdateRowOnly(ctx context.Context, row any, only ...string) error {
+	query, args := updateRowString(row, only...)
+	_, err := d.Exec(ctx, query, args...)
+	return err
+}
