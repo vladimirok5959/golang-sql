@@ -3,8 +3,8 @@ package common_test
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/url"
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -356,7 +356,7 @@ var _ = Describe("common", func() {
 			// })
 
 			It("for SQLite", func() {
-				f, err := ioutil.TempFile("", "go-sqlite3-test-")
+				f, err := os.CreateTemp("", "go-sqlite3-test-")
 				Expect(err).To(Succeed())
 				f.Close()
 

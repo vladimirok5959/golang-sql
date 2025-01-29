@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -13,7 +13,7 @@ import (
 
 func main() {
 	// Get temp file name
-	f, err := ioutil.TempFile("", "go-sqlite-")
+	f, err := os.CreateTemp("", "go-sqlite-")
 	if err != nil {
 		panic(fmt.Sprintf("%s", err))
 	}

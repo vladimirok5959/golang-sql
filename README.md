@@ -102,3 +102,19 @@ Selecting specific user with ID: 5
 ID: 5, Name: Alice
 [SQL] [func Close] (empty) (nil) 0.000 ms
 ```
+
+## Extra
+
+```sh
+go version
+go version go1.23.5 linux/amd64
+
+go env
+CGO_ENABLED='1'
+
+gcc -v
+gcc version 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04)
+
+golangci-lint version
+golangci-lint has version v1.63.4 built with go1.23.5
+```

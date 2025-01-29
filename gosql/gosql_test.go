@@ -2,7 +2,7 @@ package gosql_test
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -342,7 +342,7 @@ var _ = Describe("gosql", func() {
 
 		Context("for SQLite", func() {
 			It("open connection, migrate and select data", func() {
-				f, err := ioutil.TempFile("", "go-sqlite-test-")
+				f, err := os.CreateTemp("", "go-sqlite-test-")
 				Expect(err).To(Succeed())
 				f.Close()
 
@@ -363,7 +363,7 @@ var _ = Describe("gosql", func() {
 			})
 
 			It("open connection, migrate and select by ID", func() {
-				f, err := ioutil.TempFile("", "go-sqlite-test-")
+				f, err := os.CreateTemp("", "go-sqlite-test-")
 				Expect(err).To(Succeed())
 				f.Close()
 
@@ -384,7 +384,7 @@ var _ = Describe("gosql", func() {
 			})
 
 			It("open connection, migrate and check row", func() {
-				f, err := ioutil.TempFile("", "go-sqlite-test-")
+				f, err := os.CreateTemp("", "go-sqlite-test-")
 				Expect(err).To(Succeed())
 				f.Close()
 
@@ -406,7 +406,7 @@ var _ = Describe("gosql", func() {
 			})
 
 			It("open connection, migrate and delete row", func() {
-				f, err := ioutil.TempFile("", "go-sqlite-test-")
+				f, err := os.CreateTemp("", "go-sqlite-test-")
 				Expect(err).To(Succeed())
 				f.Close()
 
@@ -434,7 +434,7 @@ var _ = Describe("gosql", func() {
 			})
 
 			It("open connection, migrate and insert row", func() {
-				f, err := ioutil.TempFile("", "go-sqlite-test-")
+				f, err := os.CreateTemp("", "go-sqlite-test-")
 				Expect(err).To(Succeed())
 				f.Close()
 
@@ -484,7 +484,7 @@ var _ = Describe("gosql", func() {
 			})
 
 			It("open connection, migrate and update row", func() {
-				f, err := ioutil.TempFile("", "go-sqlite-test-")
+				f, err := os.CreateTemp("", "go-sqlite-test-")
 				Expect(err).To(Succeed())
 				f.Close()
 
@@ -513,7 +513,7 @@ var _ = Describe("gosql", func() {
 		})
 
 		It("open connection and skip migration", func() {
-			f, err := ioutil.TempFile("", "go-sqlite-test-")
+			f, err := os.CreateTemp("", "go-sqlite-test-")
 			Expect(err).To(Succeed())
 			f.Close()
 

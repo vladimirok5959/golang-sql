@@ -1,17 +1,17 @@
 module github.com/vladimirok5959/golang-sql
 
-go 1.18
+go 1.23
 
 require (
-	github.com/amacneil/dbmate v1.15.0
+	github.com/amacneil/dbmate v1.16.2
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.19.0
 )
 
 require (
-	github.com/go-sql-driver/mysql v1.6.0 // indirect
-	github.com/lib/pq v1.10.4 // indirect
-	github.com/mattn/go-sqlite3 v1.14.12 // indirect
+	github.com/go-sql-driver/mysql v1.7.0 // indirect
+	github.com/lib/pq v1.10.7 // indirect
+	github.com/mattn/go-sqlite3 v1.14.24 // indirect
 )
 
 require (
